@@ -30,7 +30,7 @@ function Card({ className, variant, ...props }: CardProps) {
   return <div data-slot="card" className={cn(cardVariants({ variant }), className)} {...props} />;
 }
 
-function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
+export function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
   return <div data-slot="card-content" className={cn('px-6 gap-10', className)} {...props} />;
   function CardContent({ className, ...props }: React.ComponentProps<"div">) {
     return (
@@ -41,5 +41,6 @@ function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
       />
     )
   }
+}
 
-  export { Card, CardContent };
+  export { Card };

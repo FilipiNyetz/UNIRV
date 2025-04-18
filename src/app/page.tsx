@@ -8,9 +8,9 @@ export default function Home() {
     <main className="h-auto bg-background px-4 py-8 flex flex-col items-center">
       <div className="max-w-md w-full text-center mb-2">
         <h2 className="text-xl font-semibold text-zinc-800">
-          Seja bem-vindo ao portal da <span className="text-yellow-400 font-bold">T3</span>,
+          Seja bem-vindo ao portal da <span className="text-primary font-bold">T3</span>,
           <br />
-          garanta seu ingresso para o <span className="text-yellow-500">ARRAÍA T3</span>!
+          garanta seu ingresso para o <span className="text-primary">ARRAÍA T3</span>!
         </h2>
       </div>
 
@@ -18,7 +18,7 @@ export default function Home() {
         <div className="w-full h-50 bg-gray-600 mb-2"></div>
         <div className=" flex w-full items-center justify-center flex-col">
           <h4 className="text-sm">30 de Maio, Sex. | Localização | 20:00 h</h4>
-          <h2 className="font-semibold mt-1">Restam <span className="text-yellow-500">15</span> ingressos no 1° Lote</h2>
+          <h2 className="font-semibold mt-1">Restam <span className="text-primary">15</span> ingressos no 1° Lote</h2>
         </div>
       </div>
       <div className="mt-2">
