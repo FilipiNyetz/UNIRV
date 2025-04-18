@@ -13,6 +13,7 @@ export default function () {
                 <h1 className="text-xl mb-8">Seus <span className="text-primary-darker">ingressos</span>:</h1>
                 <Ingresso titulo="Festa Junina" data="Dia 30 | Mai." />
                 <Ingresso titulo="Calourada" expirado />
+                <Ingresso titulo="TESTE" expirado />
             </div>
         </main>
     );

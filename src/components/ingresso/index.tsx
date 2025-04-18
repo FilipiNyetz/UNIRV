@@ -16,7 +16,7 @@ export function Ingresso({ titulo, data, expirado = false }: IngressoProps) {
                 <div className="w-25">
                     <h1 className="text-md">{titulo}</h1>
                 </div>
-                <Card variant={expirado ? "expired" : "default"} className="border-0">
+                <Card variant={expirado ? "expired" : "cardDate"} className="border-0">
                     <CardContent className="w-30 md:w-40">
                         <h3 className="text-xs w-full text-center md:text-md">
                             {expirado ? "Expirado" : data}

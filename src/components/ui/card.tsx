@@ -11,6 +11,7 @@ const cardVariants = cva(
         default: '',
         disabled: 'opacity-50 pointer-events-none',
         expired: 'bg-background-expired',
+        cardDate: 'bg-primary-darker',
         dark: ''
       },
     },
@@ -43,4 +44,4 @@ export function CardContent({ className, ...props }: React.ComponentProps<'div'>
   }
 }
 
-  export { Card };
+  export { Card, CardContent };

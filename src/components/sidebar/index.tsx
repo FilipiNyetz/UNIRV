@@ -67,7 +67,7 @@ export function Sidebar() {
             Instagram
           </Link>
           <Link
-            href="https://wa.me/5561999525238"
+            href="https://wa.me/5561999525238?text=Ol%C3%A1%2C%20tudo%20bem%20%3F%0AGostaria%20de%20informa%C3%A7%C3%B5e%20sobre%20o%20Arraia%20da%20T3!%F0%9F%8C%BE%F0%9F%92%9B%F0%9F%96%A4"
             target="_blank"
             className="flex items-center gap-2 hover:text-black transition"
           >
