@@ -2,8 +2,12 @@ import Image from 'next/image';
 import { Sidebar } from '@/components/sidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { INGRESSOS } from '@/data/ingressos.data';
 
 export default function Home() {
+
+  const isAluno = true;
+
   return (
     <main className="h-auto bg-background px-4 py-8 flex flex-col items-center">
       <div className="max-w-md w-full text-center mb-2">
@@ -22,46 +26,22 @@ export default function Home() {
         </div>
       </div>
       <div className="mt-2">
-        <Card className="mb-3">
-          <CardContent className="flex items-center">
-            <h3 className="text-lg"><span className="text-primary-darker font-semibold">1° Lote</span> <br />Aluno</h3>
-            <h1 className="font-semibold">30 R$</h1>
-            <Button>COMPRAR</Button>
-          </CardContent>
-        </Card>
-
-        <Card className="mb-3" variant={'disabled'}>
-          <CardContent className="flex items-center">
-            <h3 className="text-lg">
-              <span className="text-primary-darker font-semibold">1° Lote</span> <br />
-              Externo
-            </h3>
-            <h1 className="font-semibold">35 R$</h1>
-            <Button variant={'disabled'}>COMPRAR</Button>
-          </CardContent>
-        </Card>
-
-        <Card className="mb-3" variant={'disabled'}>
-          <CardContent className="flex items-center">
-            <h3 className="text-lg">
-              <span className="text-primary-darker font-semibold">2° Lote</span> <br />
-              Aluno
-            </h3>
-            <h1 className="font-semibold">35 R$</h1>
-            <Button variant={'disabled'}>COMPRAR</Button>
-          </CardContent>
-        </Card>
-
-        <Card className="mb-3" variant={'disabled'}>
-          <CardContent className="flex items-center">
-            <h3 className="text-lg">
-              <span className="text-primary-darker font-semibold">2° Lote</span> <br />
-              Externo
-            </h3>
-            <h1 className="font-semibold">40 R$</h1>
-            <Button variant={'disabled'}>COMPRAR</Button>
-          </CardContent>
-        </Card>
+        {INGRESSOS.map((ingresso) => 
+          <Card className="mb-3" variant={ingresso?.status == "closed" ? 'disabled' : 'default'} key={ingresso.id}>
+            <CardContent className="flex items-center">
+              <div>
+                <h3 className="text-lg"><span className="text-primary-darker font-semibold">{ingresso.loteNumber}° Lote</span> <br />Aluno</h3>
+                <h1 className="font-semibold">{ingresso.price.aluno.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</h1>
+                <Button disabled={!isAluno}>COMPRAR</Button>
+              </div>
+              <div>
+                <h3 className="text-lg"><span className="text-primary-darker font-semibold">{ingresso.loteNumber}° Lote</span> <br />Externo</h3>
+                <h1 className="font-semibold">{ingresso.price.aluno.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</h1>
+                <Button disabled={isAluno}>COMPRAR</Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </main>
   );
