@@ -72,8 +72,9 @@ const LoginPage = () => {
                         </FormItem>
                     )}
                     />
+                    <Link href={"#"} className="text-right underline hover:scale-103 hover:text-gray-700 transition duration-250">Esqueceu a senha?</Link>
                     <Button type="submit" className="w-full h-12">Entrar</Button>
-                    <p className="text-center">Ainda não tem uma conta? <Link href={"register"} className="text-primary underline hover:text-primary-darker">Registrar</Link></p>
+                    <p className="text-center">Ainda não tem uma conta? <Link href={"register"} className="text-primary underline hover:text-dark-gray transition duration-250">Registrar</Link></p>
                 </form>
             </Form>
         </div>
