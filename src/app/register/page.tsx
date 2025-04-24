@@ -2,18 +2,21 @@
 
 import { Button } from "@/components/ui/button"
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+
+import Image from "next/image"
+
 
 const formSchema = z.object({
     name: z
@@ -39,10 +42,10 @@ const formSchema = z.object({
         .regex(/[0-9]/, "Deve conter pelo menos um número"),
     confirmPassword: z
         .string(),
-    }).refine((data) => data.password === data.confirmPassword, {
-      message: "As senhas não coincidem",
-      path: ["confirmarSenha"], // mostra o erro no campo de confirmação
-    });
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmarSenha"], // mostra o erro no campo de confirmação
+});
 
 function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
@@ -66,106 +69,109 @@ const LoginPage = () => {
     })
 
     return (
-        <div className="w-auto h-screen flex flex-col items-center px-4 py-8 gap-12">
-            <h1 className="text-3xl">Registrar-se</h1>
+        <div className="w-auto h-screen flex flex-col items-center  px-4 py-8 gap-12">
+            <div className="flex gap-5 items-center">
+                <h1 className="text-3xl">Registrar-se</h1>
+                <Image src={"/Brasao.png"} alt={"Brasao da turma"} width={80} height={80} />
+            </div>
             <Form {...form}>
                 <form className="space-y-8 gap-12 flex" onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="space-y-8 w-sm flex flex-col">
                         <h1 className="text-2xl text-center">1. Dados pessoais:</h1>
                         <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Nome Completo</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Informe seu nome completo" {...field} className="h-12"/>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Nome Completo</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Informe seu nome completo" {...field} className="h-12" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <FormField
-                        control={form.control}
-                        name="cpf"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>CPF</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Informe seu CPF" {...field} className="h-12"/>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                            control={form.control}
+                            name="cpf"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>CPF</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Informe seu CPF" {...field} className="h-12" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Celular</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Informe seu telefone" {...field} className="h-12"/>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Celular</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Informe seu telefone" {...field} className="h-12" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <FormField
-                        control={form.control}
-                        name="registration"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Matrícula UNIRV</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Digite sua matrícula" {...field} className="h-12"/>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                            control={form.control}
+                            name="registration"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Matrícula UNIRV</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Digite sua matrícula" {...field} className="h-12" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                     </div>
 
                     <div className="space-y-8 w-sm flex flex-col">
-                    <h1 className="text-2xl text-center">2. Dados de acesso:</h1>
+                        <h1 className="text-2xl text-center">2. Dados de acesso:</h1>
                         <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>E-mail</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Digite seu e-mail" {...field} className="h-12"/>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>E-mail</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Digite seu e-mail" {...field} className="h-12" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Senha</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Digite sua senha" {...field} className="h-12"/>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Senha</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Digite sua senha" {...field} className="h-12" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Confirmar senha</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Confirme sua senha" {...field} className="h-12"/>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                            control={form.control}
+                            name="confirmPassword"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Confirmar senha</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Confirme sua senha" {...field} className="h-12" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <Button type="submit" className="w-full h-12 mt-5.5">Cadastrar</Button>
                         <p className="text-center">Já tem uma conta? <Link href={"/login"} className="text-primary underline hover:text-dark-gray transition duration-250">Logar</Link></p>
@@ -175,5 +181,5 @@ const LoginPage = () => {
         </div>
     );
 }
- 
+
 export default LoginPage;
