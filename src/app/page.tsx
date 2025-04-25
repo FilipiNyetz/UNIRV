@@ -18,10 +18,16 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const isAluno = true;
   const ingressosService = new IngressosService()
+  let ingressos;
 
   useEffect(() => {
     ingressosService.listarTodos().then((response) => {
-      console.log(response.data)
+      ingressos = response.data
+      {
+        ingressos.map((ingresso: any) =>
+          console.log(ingresso)
+        )
+      }
     }).catch((error) => {
       console.log(error)
     })
