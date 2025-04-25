@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Image from 'next/image';
 
@@ -8,15 +8,28 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { INGRESSOS } from '@/data/ingressos.data';
 import { Modal } from '@/components/modal';
+import { UsuarioService } from '../../service/UsuariosService';
+import { error } from 'console';
 
 
 export default function Home() {
 
   const [isOpen, setIsOpen] = useState(false);
   const isAluno = true;
+  const usuarioService = new UsuarioService()
+
+  useEffect(() => {
+    usuarioService.listarTodos().then((response) => {
+      console.log(response.data)
+    }).catch((error) => {
+      console.log(error)
+    })
+  }, [])
 
   return (
     <main className="h-auto px-4 py-8 flex flex-col items-center">
+      <div>
+      </div>
       <div className=" flex flex-col max-w-md w-full text-center mb-2 items-center">
         <Image src={"/Brasao.png"} alt={"Brasao da turma"} width={80} height={80} />
         <h2 className="text-xl font-semibold text-zinc-800">
