@@ -13,25 +13,44 @@ import { error } from 'console';
 import { IngressosService } from '../../service/IngressoService';
 
 
+interface Ingresso {
+  id: number;
+  lote_id: number;
+  nome_evento: string;
+  valor: number;
+  disponivel: number;
+  created_at: string;
+  updated_at: string;
+  data_validade: string;
+  deleted_at: string | null;
+}
+
+
 export default function Home() {
 
   const [isOpen, setIsOpen] = useState(false);
+  const [lotes, setLotes] = useState([]);
+  const [ingressos, setIngressos] = useState<Ingresso[]>([]);
   const isAluno = true;
-  const ingressosService = new IngressosService()
-  let ingressos;
+
+  const lotesService = new LotesService();
+  const ingressosService = new IngressosService();
 
   useEffect(() => {
-    ingressosService.listarTodos().then((response) => {
-      ingressos = response.data
-      {
-        ingressos.map((ingresso: any) =>
-          console.log(ingresso)
-        )
+    async function fetchData() {
+      try {
+        const lotesResponse = await lotesService.listarTodos();
+        const ingressosResponse = await ingressosService.listarTodos();
+
+        setLotes(lotesResponse.data);
+        setIngressos(ingressosResponse.data);
+      } catch (err) {
+        console.error('Erro ao carregar dados:', err);
       }
-    }).catch((error) => {
-      console.log(error)
-    })
-  }, [])
+    }
+
+    fetchData();
+  }, []);
 
   return (
     <main className="h-auto px-4 py-8 flex flex-col items-center">
@@ -52,28 +71,43 @@ export default function Home() {
         </div>
       </div>
       <div className="mt-2">
-        {INGRESSOS.map((ingresso) =>
-          <Card className="mb-3" variant={ingresso?.status == "closed" ? 'disabled' : 'default'} key={ingresso.id}>
+        {[...new Map(ingressos.map(i => [i.lote_id, i])).values()].map((ingresso) =>
+          <Card className="mb-3" variant={ingresso?.disponivel === 0 ? 'disabled' : 'default'} key={ingresso.id}>
             <CardContent className="flex items-center flex-col gap-0">
-              <h2 className="text-lg"><span className="text-primary-darker font-semibold">{ingresso.loteNumber}° Lote</span></h2>
-              <div className='flex w-full h-full gap-6'>
-                <div className='flex flex-col justify-center items-center w-full'>
+              <h2 className="text-lg">
+                <span className="text-primary-darker font-semibold">
+                  {ingresso.lote_id}° Lote
+                </span>
+              </h2>
+              <div className="flex w-full h-full gap-6">
+                <div className="flex flex-col justify-center items-center w-full">
                   <h3 className="text-xl">Aluno</h3>
-                  <h1 className="font-semibold">{ingresso.price.aluno.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h1>
-                  <Button disabled={!isAluno} onClick={() => setIsOpen(true)}>COMPRAR</Button>
+                  <h1 className="font-semibold">
+                    {ingresso.valor.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </h1>
+                  <Button disabled={!isAluno || ingresso.disponivel === 0} onClick={() => setIsOpen(true)}>COMPRAR</Button>
                 </div>
 
-                <div className="border-l border-black h-full"></div>
+                <div className="border-l border-black h-full" />
 
-                <div className='flex flex-col justify-center items-center w-full'>
+                <div className="flex flex-col justify-center items-center w-full">
                   <h3 className="text-xl">Externo</h3>
-                  <h1 className="font-semibold">{ingresso.price.aluno.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h1>
-                  <Button disabled={isAluno} onClick={() => setIsOpen(true)}>COMPRAR</Button>
+                  <h1 className="font-semibold">
+                    {ingresso.valor.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </h1>
+                  <Button disabled={isAluno || ingresso.disponivel === 0} onClick={() => setIsOpen(true)}>COMPRAR</Button>
                 </div>
               </div>
             </CardContent>
           </Card>
         )}
+
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       </div>
     </main>
