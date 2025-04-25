@@ -44,4 +44,4 @@ export function CardContent({ className, ...props }: React.ComponentProps<'div'>
   }
 }
 
-  export { Card };
+export { Card };

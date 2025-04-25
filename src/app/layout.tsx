@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { NavigationMenu } from '@/components/ui/navigation-menu';
 import './globals.css';
+import Image from "next/image"
 import { Sidebar } from '@/components/sidebar';
 import { Poppins } from 'next/font/google';
 
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'], // escolha os pesos que você precisa
+  weight: ['400', '500', '600', '700'],
   variable: '--font-poppins',
   display: 'swap',
 });
@@ -23,11 +23,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={poppins.variable}>
-      <body className={`antialiased`}>
-        <div>
-          <Sidebar></Sidebar>
-        </div>
-        {children}
+      <body className="antialiased relative ">
+
+
+        {/* Sidebar fixa no topo */}
+        <Sidebar />
+
+        {/* Conteúdo principal */}
+        <main className='relative z-10 w-full flex flex-col items-center'>
+          {/* Vou manter o código da marca d'água comentado, caso seja necessário retornar */}
+          {/* <div style={{
+            zIndex: -1,
+            position: 'fixed',
+            width: "100vw",
+            height: "100vh",
+            top: 55,
+            left: 0,
+            opacity: 0.04
+
+          }}>
+            <Image src={"/Brasao.png"} alt={"Brasao da turma"}
+              layout='fill'
+              objectFit='contain' />
+          </div> */}
+          {children}
+        </main>
+
       </body>
     </html>
   );

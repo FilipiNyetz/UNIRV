@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import Image from 'next/image';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { INGRESSOS } from '@/data/ingressos.data';
@@ -14,8 +16,9 @@ export default function Home() {
   const isAluno = true;
 
   return (
-    <main className="h-auto bg-background px-4 py-8 flex flex-col items-center">
-      <div className="max-w-md w-full text-center mb-2">
+    <main className="h-auto px-4 py-8 flex flex-col items-center">
+      <div className=" flex flex-col max-w-md w-full text-center mb-2 items-center">
+        <Image src={"/Brasao.png"} alt={"Brasao da turma"} width={80} height={80} />
         <h2 className="text-xl font-semibold text-zinc-800">
           Seja bem-vindo ao portal da <span className="text-primary font-bold">T3</span>,
           <br />
