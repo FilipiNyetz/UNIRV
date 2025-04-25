@@ -8,18 +8,19 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { INGRESSOS } from '@/data/ingressos.data';
 import { Modal } from '@/components/modal';
-import { UsuarioService } from '../../service/UsuariosService';
+import { LotesService } from '../../service/LotesService';
 import { error } from 'console';
+import { IngressosService } from '../../service/IngressoService';
 
 
 export default function Home() {
 
   const [isOpen, setIsOpen] = useState(false);
   const isAluno = true;
-  const usuarioService = new UsuarioService()
+  const ingressosService = new IngressosService()
 
   useEffect(() => {
-    usuarioService.listarTodos().then((response) => {
+    ingressosService.listarTodos().then((response) => {
       console.log(response.data)
     }).catch((error) => {
       console.log(error)

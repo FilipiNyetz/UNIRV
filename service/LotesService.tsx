@@ -6,7 +6,7 @@ export const axiosInstance = axios.create({
 });
 
 // Serviço para manipulação de usuários (ou lotes, pelo endpoint)
-export class UsuarioService {
+export class LotesService {
     listarTodos() {
         return axiosInstance.get("/api/lotes/show");
     }
