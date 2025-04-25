@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react" // adicione esse import
 
 import { Button } from "@/components/ui/button"
 import {
@@ -54,6 +55,7 @@ function onSubmit(values: z.infer<typeof formSchema>) {
 }
 
 const LoginPage = () => {
+    const [noRegistration, setNoRegistration] = useState(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -124,12 +126,30 @@ const LoginPage = () => {
                                 <FormItem>
                                     <FormLabel>Matrícula UNIRV</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Digite sua matrícula" {...field} className="h-12" />
+                                        <Input
+                                            placeholder="Digite sua matrícula"
+                                            {...field}
+                                            className="h-12"
+                                            disabled={noRegistration} // desabilita se checkbox estiver marcado
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+                        <label className="flex items-center gap-2 text-sm text-muted-foreground mt-[-1rem]">
+                            <input
+                                type="checkbox"
+                                checked={noRegistration}
+                                onChange={(e) => {
+                                    setNoRegistration(e.target.checked)
+                                    if (e.target.checked) {
+                                        form.setValue("registration", "")
+                                    }
+                                }}
+                            />
+                            Não tenho matrícula
+                        </label>
                     </div>
 
                     <div className="space-y-8 w-sm flex flex-col">

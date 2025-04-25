@@ -25,8 +25,7 @@ export default function Home() {
       <div className="w-full max-w-md">
         <div className="w-full h-50 bg-gray-600 mb-2"></div>
         <div className=" flex w-full items-center justify-center flex-col">
-          <h4 className="text-sm">30 de Maio, Sex. | Localização | 20:00 h</h4>
-          <h2 className="font-semibold mt-1">Restam <span className="text-primary">15</span> ingressos no 1° Lote</h2>
+          <h3 className="text-m ">30 de Maio, Sex. | Localização | 20:00 h</h3>
         </div>
       </div>
       <div className="mt-2">
