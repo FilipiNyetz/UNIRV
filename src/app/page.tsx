@@ -119,7 +119,7 @@ export default function Home() {
                       {isAluno ? (ingresso.valor).toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
-                      }) : (ingresso.valor + 5).toLocaleString('pt-BR', {
+                      }) : (ingresso.valor += 5).toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
                       })}
