@@ -116,7 +116,10 @@ export default function Home() {
                   <div className="flex flex-col justify-center items-center w-full">
                     <h3 className="text-xl">Aluno</h3>
                     <h1 className="font-semibold">
-                      {isAluno ? (ingresso.valor) : (ingresso.valor + 5).toLocaleString('pt-BR', {
+                      {isAluno ? (ingresso.valor).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      }) : (ingresso.valor + 5).toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
                       })}
