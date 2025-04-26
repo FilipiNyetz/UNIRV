@@ -118,10 +118,10 @@ export default function Home() {
                   <div className="flex flex-col justify-center items-center w-full">
                     <h3 className="text-xl">Aluno</h3>
                     <h1 className="font-semibold">
-                      {/* {ingresso.valor.toLocaleString('pt-BR', {
+                      {ingresso.valor_aluno.toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
-                      })} */}
+                      })}
                     </h1>
                     <Button
                       disabled={!isAluno || !isLoteHabilitado}
@@ -136,7 +136,7 @@ export default function Home() {
                   <div className="flex flex-col justify-center items-center w-full">
                     <h3 className="text-xl">Externo</h3>
                     <h1 className="font-semibold">
-                      {ingresso.valor_aluno.toLocaleString('pt-BR', {
+                      {ingresso.valor_externo.toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
                       })}
