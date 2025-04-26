@@ -44,7 +44,7 @@ export default function Home() {
 
         setLotes(lotesResponse.data);
         setIngressos(ingressosResponse.data);
-        console.log(ingressosResponse.data[0])
+        console.log(ingressosResponse.data[0].disponivel)
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
       }
