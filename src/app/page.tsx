@@ -21,9 +21,15 @@ interface Ingresso {
   deleted_at: string | null;
 }
 
+interface Lote {
+  id: number;
+  ativo: boolean; // Adicionei a propriedade 'ativo' para determinar se o lote está ativo
+}
+
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [ingressos, setIngressos] = useState<Ingresso[]>([]);
+  const [lotes, setLotes] = useState<Lote[]>([]);
   const isAluno = true;
 
   const lotesService = new LotesService();
@@ -35,8 +41,9 @@ export default function Home() {
         const lotesResponse = await lotesService.listarTodos();
         const ingressosResponse = await ingressosService.listarTodos();
         setIngressos(ingressosResponse.data);
+        setLotes(lotesResponse.data); // Adiciona os lotes ao estado
         console.log('Ingressos carregados:', ingressosResponse.data);
-        console.log(lotesResponse.data)
+        console.log('Lotes carregados:', lotesResponse.data);
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
       }
@@ -78,56 +85,67 @@ export default function Home() {
       </div>
 
       <div className="mt-2 w-full max-w-md">
-        {Object.values(ingressosPorLote).map((ingresso) => (
-          <Card
-            className="mb-3"
-            variant={ingresso.disponivel === 0 ? 'disabled' : 'default'}
-            key={ingresso.lote_id}
-          >
-            <CardContent className="flex items-center flex-col gap-0">
-              <h2 className="text-lg">
-                <span className="text-primary-darker font-semibold">
-                  {ingresso.lote_id}° Lote
-                </span>
-              </h2>
-              <div className="flex w-full h-full gap-6">
-                <div className="flex flex-col justify-center items-center w-full">
-                  <h3 className="text-xl">Aluno</h3>
-                  <h1 className="font-semibold">
-                    {ingresso.valor.toLocaleString('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                    })}
-                  </h1>
-                  <Button
-                    disabled={!isAluno || ingresso.disponivel === 0}
-                    onClick={() => setIsOpen(true)}
-                  >
-                    COMPRAR
-                  </Button>
-                </div>
+        {Object.values(ingressosPorLote).map((ingresso) => {
+          // Encontre o lote correspondente ao ingresso
+          const lote = lotes.find((l) => l.id === ingresso.lote_id);
 
-                <div className="border-l border-black h-full" />
+          // Verifique se o lote está ativo
+          const isLoteAtivo = lote?.ativo;
 
-                <div className="flex flex-col justify-center items-center w-full">
-                  <h3 className="text-xl">Externo</h3>
-                  <h1 className="font-semibold">
-                    {ingresso.valor.toLocaleString('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                    })}
-                  </h1>
-                  <Button
-                    disabled={isAluno || ingresso.disponivel === 0}
-                    onClick={() => setIsOpen(true)}
-                  >
-                    COMPRAR
-                  </Button>
+          // Defina se o lote está habilitado ou não
+          const isLoteHabilitado = isLoteAtivo && ingresso.disponivel > 0;
+
+          return (
+            <Card
+              className="mb-3"
+              variant={isLoteHabilitado ? 'default' : 'disabled'} // Se o lote não for ativo ou não tiver ingressos disponíveis, o card fica desabilitado
+              key={ingresso.lote_id}
+            >
+              <CardContent className="flex items-center flex-col gap-0">
+                <h2 className="text-lg">
+                  <span className="text-primary-darker font-semibold">
+                    {ingresso.lote_id}° Lote
+                  </span>
+                </h2>
+                <div className="flex w-full h-full gap-6">
+                  <div className="flex flex-col justify-center items-center w-full">
+                    <h3 className="text-xl">Aluno</h3>
+                    <h1 className="font-semibold">
+                      {ingresso.valor.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
+                    </h1>
+                    <Button
+                      disabled={!isAluno || !isLoteHabilitado}
+                      onClick={() => setIsOpen(true)}
+                    >
+                      COMPRAR
+                    </Button>
+                  </div>
+
+                  <div className="border-l border-black h-full" />
+
+                  <div className="flex flex-col justify-center items-center w-full">
+                    <h3 className="text-xl">Externo</h3>
+                    <h1 className="font-semibold">
+                      {ingresso.valor.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      })}
+                    </h1>
+                    <Button
+                      disabled={isAluno || !isLoteHabilitado}
+                      onClick={() => setIsOpen(true)}
+                    >
+                      COMPRAR
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
 
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       </div>
