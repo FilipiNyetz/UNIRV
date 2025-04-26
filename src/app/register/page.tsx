@@ -26,7 +26,8 @@ const formSchema = z.object({
     cpf: z
         .string()
         .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF deve estar no formato 000.000.000-00")
-        .regex(/^\d{11}$/, "CPF deve conter 11 números"),
+        // .regex(/^\d{11}$/, "CPF deve conter 11 números"),
+        .regex(/^(\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}|\d{3}\.?\d{3}\.?\d{3}-?\d{2})$/, "CPF deve conter 11 números"),
     phone: z
         .string()
         .regex(/^\d{11}$/, "Celular deve conter 11 números (com DDD)"),
