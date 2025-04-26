@@ -44,8 +44,7 @@ export default function Home() {
 
         setLotes(lotesResponse.data);
         setIngressos(ingressosResponse.data);
-        console.log(ingressosResponse.data)
-
+        console.log(ingressos)
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
       }
@@ -73,44 +72,42 @@ export default function Home() {
         </div>
       </div>
       <div className="mt-2">
-        {[...new Map(ingressos.map(i => [i.lote_id, i])).values()].map((ingresso) => {
-          console.log('Renderizando ingresso:', ingresso.id, 'Disponibilidade:', ingresso.disponivel);
-          return (
-            <Card className="mb-3" variant={(ingresso.disponivel) === 0 ? 'disabled' : 'default'} key={ingresso.id}>
-              <CardContent className="flex items-center flex-col gap-0">
-                <h2 className="text-lg">
-                  <span className="text-primary-darker font-semibold">
-                    {ingresso.lote_id}° Lote
-                  </span>
-                </h2>
-                <div className="flex w-full h-full gap-6">
-                  <div className="flex flex-col justify-center items-center w-full">
-                    <h3 className="text-xl">Aluno</h3>
-                    <h1 className="font-semibold">
-                      {ingresso.valor.toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      })}
-                    </h1>
-                    <Button disabled={!isAluno || ingresso.disponivel === 0} onClick={() => setIsOpen(true)}>COMPRAR</Button>
-                  </div>
-
-                  <div className="border-l border-black h-full" />
-
-                  <div className="flex flex-col justify-center items-center w-full">
-                    <h3 className="text-xl">Externo</h3>
-                    <h1 className="font-semibold">
-                      {ingresso.valor.toLocaleString('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      })}
-                    </h1>
-                    <Button disabled={isAluno || ingresso.disponivel === 0} onClick={() => setIsOpen(true)}>COMPRAR</Button>
-                  </div>
+        {[...new Map(ingressos.map(i => [i.lote_id, i])).values()].map((ingresso) =>
+          <Card className="mb-3" variant={ingresso?.disponivel === 0 ? 'disabled' : 'default'} key={ingresso.id}>
+            <CardContent className="flex items-center flex-col gap-0">
+              <h2 className="text-lg">
+                <span className="text-primary-darker font-semibold">
+                  {ingresso.lote_id}° Lote
+                </span>
+              </h2>
+              <div className="flex w-full h-full gap-6">
+                <div className="flex flex-col justify-center items-center w-full">
+                  <h3 className="text-xl">Aluno</h3>
+                  <h1 className="font-semibold">
+                    {ingresso.valor.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </h1>
+                  <Button disabled={!isAluno || ingresso.disponivel === 0} onClick={() => setIsOpen(true)}>COMPRAR</Button>
                 </div>
-              </CardContent>
-            </Card>
-        })}
+
+                <div className="border-l border-black h-full" />
+
+                <div className="flex flex-col justify-center items-center w-full">
+                  <h3 className="text-xl">Externo</h3>
+                  <h1 className="font-semibold">
+                    {ingresso.valor.toLocaleString('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    })}
+                  </h1>
+                  <Button disabled={isAluno || ingresso.disponivel === 0} onClick={() => setIsOpen(true)}>COMPRAR</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       </div>
