@@ -74,7 +74,8 @@ export default function Home() {
       </div>
       <div className="mt-2">
         {[...new Map(ingressos.map(i => [i.lote_id, i])).values()].map((ingresso) =>
-          <Card className="mb-3" variant={ingresso?.disponivel === 0 ? 'disabled' : 'default'} key={ingresso.id}>
+
+          <Card className="mb-3" variant={Number(ingresso?.disponivel) === 0 ? 'disabled' : 'default'} key={ingresso.id}>
             <CardContent className="flex items-center flex-col gap-0">
               <h2 className="text-lg">
                 <span className="text-primary-darker font-semibold">
