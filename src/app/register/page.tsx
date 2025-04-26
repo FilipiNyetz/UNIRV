@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 
 import Image from "next/image"
+import registerAction from "./registerAction"
 
 
 const formSchema = z.object({
@@ -68,7 +69,22 @@ const LoginPage = () => {
             password: "",
             confirmPassword: "",
         },
-    })
+    });
+
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        const formData = new FormData();
+
+        // Preenche manualmente o FormData
+        formData.append("name", values.name);
+        formData.append("cpf", values.cpf);
+        formData.append("phone", values.phone);
+        formData.append("registration", values.registration);
+        formData.append("email", values.email);
+        formData.append("password", values.password);
+        formData.append("confirmPassword", values.confirmPassword);
+
+        await registerAction(formData);
+    }
 
     return (
         <div className="w-auto h-screen flex flex-col items-center  px-4 py-8 gap-12">
