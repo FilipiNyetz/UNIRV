@@ -36,6 +36,7 @@ export default function Home() {
         const ingressosResponse = await ingressosService.listarTodos();
         setIngressos(ingressosResponse.data);
         console.log('Ingressos carregados:', ingressosResponse.data);
+        console.log(lotesResponse.data)
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
       }
