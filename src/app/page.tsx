@@ -13,7 +13,8 @@ interface Ingresso {
   id: number;
   lote_id: number;
   nome_evento: string;
-  valor: number;
+  valor_aluno: number;
+  valor_externo: number;
   disponivel: number;
   created_at: string;
   updated_at: string;
@@ -54,17 +55,18 @@ export default function Home() {
 
   // Agrupando ingressos por lote_id e somando os disponíveis
   const ingressosPorLote = ingressos.reduce((acc, ingresso) => {
-    const { lote_id, valor } = ingresso;
+    const { lote_id, valor_aluno, valor_externo } = ingresso;
     if (!acc[lote_id]) {
       acc[lote_id] = {
         lote_id,
-        valor,
+        valor_aluno,
+        valor_externo,
         disponivel: 0,
       };
     }
     acc[lote_id].disponivel += ingresso.disponivel;
     return acc;
-  }, {} as Record<number, { lote_id: number; valor: number; disponivel: number }>);
+  }, {} as Record<number, { lote_id: number; valor_aluno: number; valor_externo: number; disponivel: number }>);
 
   return (
     <main className="h-auto px-4 py-8 flex flex-col items-center">
@@ -134,10 +136,10 @@ export default function Home() {
                   <div className="flex flex-col justify-center items-center w-full">
                     <h3 className="text-xl">Externo</h3>
                     <h1 className="font-semibold">
-                      {/* {ingresso.valor.toLocaleString('pt-BR', {
+                      {ingresso.valor_aluno.toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
-                      })} */}
+                      })}
                     </h1>
                     <Button
                       disabled={isAluno || !isLoteHabilitado}
