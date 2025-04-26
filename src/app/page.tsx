@@ -45,7 +45,7 @@ export default function Home() {
         setLotes(lotesResponse.data);
         setIngressos(ingressosResponse.data);
         console.log(ingressosResponse.data)
-        console.log(ingressos)
+
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
       }
@@ -75,7 +75,7 @@ export default function Home() {
       <div className="mt-2">
         {[...new Map(ingressos.map(i => [i.lote_id, i])).values()].map((ingresso) =>
 
-          <Card className="mb-3" variant={Number(ingresso?.disponivel) === 0 ? 'disabled' : 'default'} key={ingresso.id}>
+          <Card className="mb-3" variant={Number(ingresso.disponivel) === 0 ? 'disabled' : 'default'} key={ingresso.id}>
             <CardContent className="flex items-center flex-col gap-0">
               <h2 className="text-lg">
                 <span className="text-primary-darker font-semibold">
