@@ -23,7 +23,7 @@ interface Ingresso {
 
 interface Lote {
   id: number;
-  ativo: boolean; // Adicionei a propriedade 'ativo' para determinar se o lote está ativo
+  ativo: number; // Adicionei a propriedade 'ativo' para determinar se o lote está ativo
 }
 
 export default function Home() {
@@ -89,8 +89,13 @@ export default function Home() {
           // Encontre o lote correspondente ao ingresso
           const lote = lotes.find((l) => l.id === ingresso.lote_id);
 
+          let isLoteAtivo
+
           // Verifique se o lote está ativo
-          const isLoteAtivo = lote?.ativo;
+          if (lote?.ativo == 1) {
+            isLoteAtivo = true
+          }
+
 
           // Defina se o lote está habilitado ou não
           const isLoteHabilitado = isLoteAtivo && ingresso.disponivel > 0;
