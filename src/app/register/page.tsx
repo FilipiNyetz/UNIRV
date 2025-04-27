@@ -78,13 +78,14 @@ const LoginPage = () => {
 
         // Preenche manualmente o FormData
         formData.append("name", values.name);
-        formData.append("cpf", values.cpf);
+        // formData.append("cpf", values.cpf);
         formData.append("phone", values.phone);
         formData.append("registration", values.registration);
         formData.append("email", values.email);
         formData.append("password", values.password);
         formData.append("confirmPassword", values.confirmPassword);
 
+        console.log("Chamando registerAction");
         await registerAction(formData);
     }
 
