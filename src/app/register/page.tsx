@@ -73,6 +73,7 @@ const LoginPage = () => {
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        console.log("onSubmit chamado");
         const formData = new FormData();
 
         // Preenche manualmente o FormData
@@ -86,6 +87,7 @@ const LoginPage = () => {
 
         await registerAction(formData);
     }
+
 
     return (
         <div className="w-auto h-screen flex flex-col items-center  px-4 py-8 gap-12">

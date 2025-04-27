@@ -3,6 +3,7 @@
 import { RegisterService } from "../../../service/RegisterService"; // ajuste o caminho se necessário
 
 export default async function registerAction(formData: FormData) {
+    console.log("Chega ate a action")
     const entries = Array.from(formData.entries());
     const data = Object.fromEntries(entries);
 
