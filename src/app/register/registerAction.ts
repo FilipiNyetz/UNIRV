@@ -1,6 +1,7 @@
 export default async function registerAction(data: { [key: string]: string }) {
+    console.log("Chega ate aqui")
     try {
-        const response = await fetch('/api/register', {
+        const response = await fetch('https://unirv-production.up.railway.app/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',  // Envia como JSON
