@@ -6,7 +6,8 @@ export default async function registerAction(formData: FormData) {
     const entries = Array.from(formData.entries());
     const data = Object.fromEntries(entries);
 
-    console.log(data);
+    console.log("Dados que estou enviando:", data);
+    console.log("Essa funcao é chamada")
 
     const service = new RegisterService();
 
