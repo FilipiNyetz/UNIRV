@@ -15,6 +15,6 @@ export class RegisterService {
         phone: string;
         registration: string;
     }) {
-        return axiosInstance.post('api/register', data);
+        return axiosInstance.post('/api/register', data);
     }
 }
