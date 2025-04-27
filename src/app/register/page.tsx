@@ -74,6 +74,7 @@ const LoginPage = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log("onSubmit chamado");
+        console.log("Dados do formulário:", values);
         const formData = new FormData();
 
         // Preenche manualmente o FormData
@@ -86,6 +87,7 @@ const LoginPage = () => {
         formData.append("confirmPassword", values.confirmPassword);
 
         console.log("Chamando registerAction");
+        console.log("FormData:", formData);
         await registerAction(formData);
     }
 
