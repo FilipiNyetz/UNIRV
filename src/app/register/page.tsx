@@ -73,23 +73,24 @@ const LoginPage = () => {
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log("onSubmit chamado");
         console.log("Dados do formulário:", values);
-        const formData = new FormData();
 
-        // Preenche manualmente o FormData
-        formData.append("name", values.name);
-        // formData.append("cpf", values.cpf);
-        formData.append("phone", values.phone);
-        formData.append("registration", values.registration);
-        formData.append("email", values.email);
-        formData.append("password", values.password);
-        formData.append("confirmPassword", values.confirmPassword);
+        const formData = {
+            name: values.name,
+            email: values.email,
+            phone: values.phone,
+            password: values.password,
+            confirmPassword: values.confirmPassword,
+            registration: values.registration || "",
+        };
 
-        console.log("Chamando registerAction");
-        console.log("FormData:", formData);
+        console.log("Enviando dados como JSON:", formData);
+
+        // Aqui você chama a registerAction com o objeto JSON
         await registerAction(formData);
     }
+
+
 
 
     return (
