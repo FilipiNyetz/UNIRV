@@ -78,7 +78,7 @@ const RegisterPage = () => {
 
             if (result.success) {
                 // Redireciona para login e ENCERRA
-                router.push('/login');
+                router.replace('/login');
                 return;
             } else {
                 setMessage(result.message || "Erro ao realizar cadastro.");
