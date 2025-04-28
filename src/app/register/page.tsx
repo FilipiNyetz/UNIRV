@@ -74,12 +74,18 @@ const RegisterPage = () => {
         console.log("Enviando dados como JSON:", formData);
 
         try {
-            await registerAction(formData)
-            setMessage("Cadastro realizado com sucesso! Você já pode comprar seu ingresso.");
-            router.push('/login') // <--- define mensagem de sucesso
-            form.reset(); // reseta o formulário
+            const result = await registerAction(formData);
+
+            if (result.success) {
+                // Redireciona para login e ENCERRA
+                router.push('/login');
+                return;
+            } else {
+                setMessage(result.message || "Erro ao realizar cadastro.");
+            }
         } catch (error) {
-            setMessage("Erro ao realizar cadastro. Tente novamente."); // <--- define mensagem de erro
+            console.error(error);
+            setMessage("Erro ao realizar cadastro. Tente novamente.");
         }
     }
 
