@@ -20,6 +20,7 @@ import Image from "next/image"
 import registerAction from "./registerAction"
 
 
+
 const formSchema = z.object({
     name: z
         .string().min(3, "Nome deve ter pelo menos 3 caracteres"),
@@ -85,13 +86,8 @@ const LoginPage = () => {
         };
 
         console.log("Enviando dados como JSON:", formData);
-
-        // Aqui você chama a registerAction com o objeto JSON
-        await registerAction(formData);
+        await (registerAction(formData))
     }
-
-
-
 
     return (
         <div className="w-auto h-screen flex flex-col items-center  px-4 py-8 gap-12">
