@@ -1,4 +1,4 @@
-'use server'
+// 'use server'
 import axios from "axios";
 
 interface FormDataProps {
@@ -11,24 +11,20 @@ interface FormDataProps {
 }
 
 export default async function registerAction(formData: FormDataProps) {
-    console.log("Recebido no server:", formData);
-
-    axios.post('https://unirv-production.up.railway.app/api/register', {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        password_confirmation: formData.confirmPassword,
-        phone: formData.phone,
-        registration: formData.registration
-    })
-        .then(function (response) {
-            console.log(response);
-        })
-        .catch(function (error) {
-            console.log(error);
+    try {
+        const response = await axios.post('https://unirv-production.up.railway.app/api/register', {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            password_confirmation: formData.confirmPassword,
+            phone: formData.phone,
+            registration: formData.registration
         });
 
-
-
-    // Aqui você faria o cadastro no banco de dados, por exemplo
+        console.log("Sucesso:", response.data);
+        return { success: true, message: "Cadastro realizado com sucesso!" };
+    } catch (error: any) {
+        console.error("Erro no cadastro:", error.response?.data || error.message);
+        return { success: false, message: error.response?.data?.message || "Erro ao cadastrar." };
+    }
 }

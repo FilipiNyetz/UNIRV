@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react" // adicione esse import
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,50 +15,33 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
-
 import Image from "next/image"
 import registerAction from "./registerAction"
 
-
-
 const formSchema = z.object({
-    name: z
-        .string().min(3, "Nome deve ter pelo menos 3 caracteres"),
-    cpf: z
-        .string()
-        .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF deve estar no formato 000.000.000-00")
-        // .regex(/^\d{11}$/, "CPF deve conter 11 números"),
-        .regex(/^(\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}|\d{3}\.?\d{3}\.?\d{3}-?\d{2})$/, "CPF deve conter 11 números"),
-    phone: z
-        .string()
+    name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
+    cpf: z.string()
+        .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF deve estar no formato 000.000.000-00"),
+    phone: z.string()
         .regex(/^\d{11}$/, "Celular deve conter 11 números (com DDD)"),
-    registration: z
-        .string(),
-    email: z
-        .string()
+    registration: z.string(),
+    email: z.string()
         .min(1, "O e-mail é obrigatório")
         .email("Formato de e-mail inválido"),
-    password: z
-        .string()
+    password: z.string()
         .min(6, "A senha deve ter no mínimo 6 caracteres")
         .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")
         .regex(/[a-z]/, "Deve conter pelo menos uma letra minúscula")
         .regex(/[0-9]/, "Deve conter pelo menos um número"),
-    confirmPassword: z
-        .string(),
+    confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "As senhas não coincidem",
-    path: ["confirmarSenha"], // mostra o erro no campo de confirmação
+    path: ["confirmarSenha"],
 });
 
-function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
-}
-
-const LoginPage = () => {
+const RegisterPage = () => {
     const [noRegistration, setNoRegistration] = useState(false)
+    const [message, setMessage] = useState("") // <--- useState para a mensagem!
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -86,19 +69,36 @@ const LoginPage = () => {
         };
 
         console.log("Enviando dados como JSON:", formData);
-        await (registerAction(formData))
+
+        try {
+            await registerAction(formData)
+            setMessage("Cadastro realizado com sucesso! Você já pode comprar seu ingresso."); // <--- define mensagem de sucesso
+            form.reset(); // reseta o formulário
+        } catch (error) {
+            setMessage("Erro ao realizar cadastro. Tente novamente."); // <--- define mensagem de erro
+        }
     }
 
     return (
-        <div className="w-auto h-screen flex flex-col items-center  px-4 py-8 gap-12">
+        <div className="w-auto h-screen flex flex-col items-center px-4 py-8 gap-12">
             <div className="flex gap-5 items-center">
                 <h1 className="text-3xl">Registrar-se</h1>
-                <Image src={"/Brasao.png"} alt={"Brasao da turma"} width={80} height={80} />
+                <Image src={"/Brasao.png"} alt={"Brasão da turma"} width={80} height={80} />
             </div>
+
+            {/* Mostra a mensagem de sucesso/erro se existir */}
+            {message && (
+                <div className="text-center text-green-600 font-semibold">
+                    {message}
+                </div>
+            )}
+
             <Form {...form}>
                 <form className="space-y-8 gap-12 flex" onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="space-y-8 w-sm flex flex-col">
                         <h1 className="text-2xl text-center">1. Dados pessoais:</h1>
+
+                        {/* Campos */}
                         <FormField
                             control={form.control}
                             name="name"
@@ -149,13 +149,14 @@ const LoginPage = () => {
                                             placeholder="Digite sua matrícula"
                                             {...field}
                                             className="h-12"
-                                            disabled={noRegistration} // desabilita se checkbox estiver marcado
+                                            disabled={noRegistration}
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
                         <label className="flex items-center gap-2 text-sm text-muted-foreground mt-[-1rem]">
                             <input
                                 type="checkbox"
@@ -173,6 +174,7 @@ const LoginPage = () => {
 
                     <div className="space-y-8 w-sm flex flex-col">
                         <h1 className="text-2xl text-center">2. Dados de acesso:</h1>
+
                         <FormField
                             control={form.control}
                             name="email"
@@ -193,7 +195,7 @@ const LoginPage = () => {
                                 <FormItem>
                                     <FormLabel>Senha</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Digite sua senha" {...field} className="h-12" />
+                                        <Input placeholder="Digite sua senha" {...field} className="h-12" type="password" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -206,14 +208,21 @@ const LoginPage = () => {
                                 <FormItem>
                                     <FormLabel>Confirmar senha</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Confirme sua senha" {...field} className="h-12" />
+                                        <Input placeholder="Confirme sua senha" {...field} className="h-12" type="password" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
                         <Button type="submit" className="w-full h-12 mt-5.5">Cadastrar</Button>
-                        <p className="text-center">Já tem uma conta? <Link href={"/login"} className="text-primary underline hover:text-dark-gray transition duration-250">Logar</Link></p>
+
+                        <p className="text-center">
+                            Já tem uma conta?{" "}
+                            <Link href={"/login"} className="text-primary underline hover:text-dark-gray transition duration-250">
+                                Logar
+                            </Link>
+                        </p>
                     </div>
                 </form>
             </Form>
@@ -221,4 +230,4 @@ const LoginPage = () => {
     );
 }
 
-export default LoginPage;
+export default RegisterPage;
