@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -40,6 +41,8 @@ const formSchema = z.object({
 });
 
 const RegisterPage = () => {
+    const router = useRouter();
+
     const [noRegistration, setNoRegistration] = useState(false)
     const [message, setMessage] = useState("") // <--- useState para a mensagem!
 
@@ -72,7 +75,8 @@ const RegisterPage = () => {
 
         try {
             await registerAction(formData)
-            setMessage("Cadastro realizado com sucesso! Você já pode comprar seu ingresso."); // <--- define mensagem de sucesso
+            setMessage("Cadastro realizado com sucesso! Você já pode comprar seu ingresso.");
+            router.push('/login') // <--- define mensagem de sucesso
             form.reset(); // reseta o formulário
         } catch (error) {
             setMessage("Erro ao realizar cadastro. Tente novamente."); // <--- define mensagem de erro
