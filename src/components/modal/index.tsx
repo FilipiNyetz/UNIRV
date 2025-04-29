@@ -1,7 +1,7 @@
 "use client"
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
-import { Copy, Map, MapPin } from "lucide-react";
+import { Copy, Map, MapPin, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 
@@ -82,12 +82,11 @@ export function Modal({ isOpen, onClose }: ModalProps) {
                     </DialogFooter>
                     <button
                         onClick={onClose}
-                        className="mt-2 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                        className="ring-offset-background cursor-pointer focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition duration-250 hover:opacity-100 hover:scale-125 focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
                     >
-                        Fechar
+                        <X className="w-5 h-5"/>
                     </button>
                 </DialogContent>
-
             </Dialog>
         </div>
     );
