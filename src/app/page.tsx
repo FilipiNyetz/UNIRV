@@ -1,43 +1,24 @@
 'use client'
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/modal';
-import { LotesService } from '../../service/LotesService';
-import { IngressosService } from '../../service/IngressoService';
 import { api } from '../../service/api';
-import { Event } from '@prisma/client';
+import { Batch, Event, Ticket } from '@prisma/client';
 
-interface Ingresso {
-  id: number;
-  lote_id: number;
-  nome_evento: string;
-  valor_aluno: number;
-  valor_externo: number;
-  disponivel: number;
-  created_at: string;
-  updated_at: string;
-  data_validade: string;
-  deleted_at: string | null;
-}
-
-interface Lote {
-  id: number;
-  ativo: number; // Adicionei a propriedade 'ativo' para determinar se o lote está ativo
-}
+interface EventWithBatchsAndTickets extends Event {
+  Batch: (Batch & {
+    Tickets: Ticket[]
+  })[];
+} 
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
-  const [eventsData, setEventsData] = useState<Event>();
-  const [ingressos, setIngressos] = useState<Ingresso[]>([]);
-  const [lotes, setLotes] = useState<Lote[]>([]);
+  const [eventsData, setEventsData] = useState<EventWithBatchsAndTickets[]>([]);
   const isAluno = true;
-
-  const lotesService = new LotesService();
-  const ingressosService = new IngressosService();
 
   const getEvents = async () => {
     api.get("/events").then((response) => {
@@ -50,38 +31,6 @@ export default function Home() {
     getEvents()
   }, [])
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     try {
-  //       const lotesResponse = await lotesService.listarTodos();
-  //       const ingressosResponse = await ingressosService.listarTodos();
-  //       setIngressos(ingressosResponse.data);
-  //       setLotes(lotesResponse.data); // Adiciona os lotes ao estado
-  //       console.log('Ingressos carregados:', ingressosResponse.data);
-  //       console.log('Lotes carregados:', lotesResponse.data);
-  //     } catch (err) {
-  //       console.error('Erro ao carregar dados:', err);
-  //     }
-  //   }
-
-  //   fetchData();
-  // }, []);
-
-  // Agrupando ingressos por lote_id e somando os disponíveis
-  const ingressosPorLote = ingressos.reduce((acc, ingresso) => {
-    const { lote_id, valor_aluno, valor_externo } = ingresso;
-    if (!acc[lote_id]) {
-      acc[lote_id] = {
-        lote_id,
-        valor_aluno,
-        valor_externo,
-        disponivel: 0,
-      };
-    }
-    acc[lote_id].disponivel += ingresso.disponivel;
-    return acc;
-  }, {} as Record<number, { lote_id: number; valor_aluno: number; valor_externo: number; disponivel: number }>);
-
   return (
     <main className="h-auto px-4 py-8 flex flex-col items-center">
       <div className="flex flex-col max-w-md w-full text-center mb-2 items-center">
@@ -91,11 +40,11 @@ export default function Home() {
         </h2>
       </div>
 
-      {eventsData?.filter((event: Event) => event.active).map((event: Event) => {
+      {eventsData?.filter((event: EventWithBatchsAndTickets) => event.active).map((event: EventWithBatchsAndTickets) => {
         const formattedDate = new Date(event.date).toLocaleDateString('pt-BR')
         return (
           <div className="w-full max-w-md" key={event.id}>
-            <p>garanta seu ingresso para o <span className="text-primary">{event.name}</span>!</p>
+            <p>Garanta seu ingresso para o <span className="text-primary">{event.name}</span>!</p>
             <div className="w-full h-50 bg-gray-600 mb-2"></div>
             <div className="flex w-full items-center justify-center flex-col">
               <h3 className="text-m">{formattedDate}</h3>

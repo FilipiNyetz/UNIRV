@@ -3,6 +3,7 @@ import './globals.css';
 import Image from "next/image"
 import { Sidebar } from '@/components/sidebar';
 import { Poppins } from 'next/font/google';
+import { SessionProvider } from 'next-auth/react'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -46,7 +47,7 @@ export default function RootLayout({
               layout='fill'
               objectFit='contain' />
           </div> */}
-          {children}
+          <SessionProvider>{children}</SessionProvider>
         </main>
 
       </body>
