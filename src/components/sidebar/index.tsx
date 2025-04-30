@@ -3,8 +3,12 @@ import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { Button } from '../ui/button';
 import { Home, MenuIcon, User } from 'lucide-react';
 import { SiInstagram, SiWhatsapp } from 'react-icons/si';
+import { auth } from '../../../auth';
 
-export function Sidebar() {
+export async function Sidebar() {
+
+  const session = await auth();
+
   return (
     <div className="w-full bg-muted/40">
       {/* MOBILE: Sheet menu */}
@@ -26,7 +30,9 @@ export function Sidebar() {
                 </Link>
                 <Link href="/perfil" className="flex items-center gap-4 px-2.5 text-black">
                   <User className="h-5 w-5" />
-                  Meu Perfil
+                  {!session ? 
+                    "Entrar"
+                  : "Meu Perfil"}
                 </Link>
                 <Link
                   href="https://www.instagram.com/medfamelt3/"
@@ -82,7 +88,10 @@ export function Sidebar() {
             className="flex items-center gap-2 text-sm font-medium hover:text-black transition"
           >
             <User className="h-4 w-4" />
-            Meu Perfil
+            {!session ? 
+              "Entrar"
+            : "Meu Perfil"
+            }
           </Link>
         </div>
       </nav>
