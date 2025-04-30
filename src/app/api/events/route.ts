@@ -3,7 +3,15 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        const events = await db.event.findMany();
+        const events = await db.event.findMany({
+            include: {
+                Batch: {
+                  include: {
+                    Tickets: true
+                  },
+                },
+              },
+          });
         return NextResponse.json(events, { status: 200 });
     } catch (error) {
         console.error("Erro ao buscar os eventos:", error);
