@@ -9,6 +9,13 @@ import { Modal } from '@/components/modal';
 import { api } from '../../service/api';
 import { Batch, Event, Ticket } from '@prisma/client';
 import { useSession } from 'next-auth/react';
+import SkeletonCard from '@/components/SkeletonCard';
+
+declare module 'next-auth' {
+  interface User {
+    studentId?: string;
+  }
+}
 
 interface EventWithBatchsAndTickets extends Event {
   Batch: (Batch & {
@@ -18,6 +25,7 @@ interface EventWithBatchsAndTickets extends Event {
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { data: userSession, status, update } = useSession({
     required: false
   });
@@ -33,9 +41,11 @@ export default function Home() {
   }, [status, userSession?.user?.studentId]);
 
   const getEvents = async () => {
+    setIsLoading(true);
     api.get("/events").then((response) => {
       setEventsData(response.data)
       console.log("events", response.data);
+      setIsLoading(false);
     })
   }
 
@@ -52,6 +62,9 @@ export default function Home() {
         </h2>
       </div>
 
+      {isLoading && (
+       <SkeletonCard /> 
+      )}
       {eventsData?.filter((event: EventWithBatchsAndTickets) => event.active).map((event: EventWithBatchsAndTickets) => {
         const formattedDate = new Date(event.date).toLocaleDateString('pt-BR')
         return (

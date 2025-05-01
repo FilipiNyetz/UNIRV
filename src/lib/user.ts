@@ -38,6 +38,7 @@ export async function findUserByCredentials(
     return {
       ...user,
       name: user.name ?? '',
+      studentId: user.studentId ?? undefined,
     };
   }
 

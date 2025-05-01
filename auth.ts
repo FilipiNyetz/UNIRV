@@ -45,11 +45,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       // Passa os dados do token para a session
       if (token) {
-        session.user.id = token.id;
+        session.user.id = token.id as string;
         session.user.name = token.name;
-        session.user.email = token.email;
+        session.user.email = token.email ?? "";
         session.user.phone = token.phone;
-        session.user.studentId = token.studentId;
+        session.user.studentId = token.studentId as string | undefined;
       }
       return session;
     },
