@@ -1,52 +1,36 @@
-"use server";
+// registerAction.ts
+'use server'
 
-import { db } from "@/lib/prisma";
-import { hashSync } from "bcrypt";
+import { db } from "@/lib/prisma"
+import { hash } from "bcrypt"
 
-export default async function registerAction(
-  _prevState: any,
-  formData: FormData
-) {
-  const data = {
-    name: formData.get("name") as string,
-    email: formData.get("email") as string,
-    phone: formData.get("phone") as string,
-    password: formData.get("password") as string,
-    studentId: formData.get("studentId") as string,
-  };
+export default async function registerAction(_: any, formData: FormData) {
+  const name = formData.get("name") as string
+  const email = formData.get("email") as string
+  const phone = formData.get("phone") as string
+  const password = formData.get("password") as string
+  const studentId = formData.get("studentId") as string | null
 
-  if (!data.email || !data.password || !data.name || !data.phone) {
-    return {
-      success: false,
-      message: "All fields are required",
-    };
+  if (!name || !email || !phone || !password) {
+    return { error: "Preencha todos os campos obrigatórios." }
   }
 
-  const userAllreadyExists = await db.user.findUnique({
-    where: {
-      email: data.email,
-    },
-  });
-
-  if (userAllreadyExists) {
-    return {
-      success: false,
-      message: "User already exists",
-    };
+  const existingUser = await db.user.findUnique({ where: { email } })
+  if (existingUser) {
+    return { error: "Este e-mail já está em uso." }
   }
+
+  const hashedPassword = await hash(password, 10)
 
   await db.user.create({
     data: {
-      email: data.email,
-      password: hashSync(data.password, 10),
-      name: data.name,
-      phone: data.phone,
-      studentId: data.studentId,
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      studentId: studentId || null,
     },
-  });
+  })
 
-  return {
-    success: true,
-    message: "User created successfully",
-  };
+  return { success: "Conta criada com sucesso! Faça login para continuar." }
 }

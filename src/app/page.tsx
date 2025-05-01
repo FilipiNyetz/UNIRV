@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/modal';
 import { api } from '../../service/api';
 import { Batch, Event, Ticket } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 
 interface EventWithBatchsAndTickets extends Event {
   Batch: (Batch & {
@@ -17,8 +18,19 @@ interface EventWithBatchsAndTickets extends Event {
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: userSession, status, update } = useSession({
+    required: false
+  });
   const [eventsData, setEventsData] = useState<EventWithBatchsAndTickets[]>([]);
-  const isAluno = true;
+
+  useEffect(() => {
+    update()
+  }, [])
+
+  const isAluno = useMemo(() => {
+    if (status !== "authenticated") return false;
+    return !!userSession?.user?.studentId;
+  }, [status, userSession?.user?.studentId]);
 
   const getEvents = async () => {
     api.get("/events").then((response) => {

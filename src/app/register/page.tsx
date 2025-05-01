@@ -1,23 +1,16 @@
 "use client"
-import { useState } from "react"
-import { useRouter } from "next/navigation";
+import { useActionState, useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Image from "next/image"
-import registerAction from "./registerAction"
+import registerAction from "@/actions/register";
+import Form from "next/form"
+import { Loader2 } from "lucide-react"
 
 const formSchema = z.object({
     name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
@@ -25,7 +18,7 @@ const formSchema = z.object({
         .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF deve estar no formato 000.000.000-00"),
     phone: z.string()
         .regex(/^\d{11}$/, "Celular deve conter 11 números (com DDD)"),
-    registration: z.string(),
+    studentId: z.string(),
     email: z.string()
         .min(1, "O e-mail é obrigatório")
         .email("Formato de e-mail inválido"),
@@ -41,53 +34,20 @@ const formSchema = z.object({
 });
 
 const RegisterPage = () => {
-    const router = useRouter();
-
-    const [noRegistration, setNoRegistration] = useState(false)
-    const [message, setMessage] = useState("") // <--- useState para a mensagem!
+    const [state, formAction, isPending] = useActionState(registerAction, null)
+    const [noStudentId, setNoStudentId] = useState(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-            cpf: "",
             phone: "",
-            registration: "",
+            studentId: "",
             email: "",
             password: "",
             confirmPassword: "",
         },
     });
-
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log("Dados do formulário:", values);
-
-        const formData = {
-            name: values.name,
-            email: values.email,
-            phone: values.phone,
-            password: values.password,
-            confirmPassword: values.confirmPassword,
-            registration: values.registration || "",
-        };
-
-        console.log("Enviando dados como JSON:", formData);
-
-        try {
-            const result = await registerAction(formData);
-
-            if (result.success) {
-                // Redireciona para login e ENCERRA
-                router.replace('/login');
-                return;
-            } else {
-                setMessage(result.message || "Erro ao realizar cadastro.");
-            }
-        } catch (error) {
-            console.error(error);
-            setMessage("Erro ao realizar cadastro. Tente novamente.");
-        }
-    }
 
     return (
         <div className="w-auto h-screen flex flex-col items-center px-4 py-8 gap-12">
@@ -96,145 +56,57 @@ const RegisterPage = () => {
                 <Image src={"/Brasao.png"} alt={"Brasão da turma"} width={80} height={80} />
             </div>
 
-            {/* Mostra a mensagem de sucesso/erro se existir */}
-            {message && (
-                <div className="text-center text-green-600 font-semibold">
-                    {message}
-                </div>
+            {state?.error && (
+                <p className="text-red-500 text-sm">{state.error}</p>
             )}
 
-            <Form {...form}>
-                <form className="space-y-8 gap-12 flex" onSubmit={form.handleSubmit(onSubmit)}>
-                    <div className="space-y-8 w-sm flex flex-col">
-                        <h1 className="text-2xl text-center">1. Dados pessoais:</h1>
+            {state?.success && (
+                <p className="text-green-600 text-sm">{state.success}</p>
+            )}
 
-                        {/* Campos */}
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nome Completo</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Informe seu nome completo" {...field} className="h-12" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="cpf"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>CPF</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Informe seu CPF" {...field} className="h-12" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="phone"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Celular</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Informe seu telefone" {...field} className="h-12" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="registration"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Matrícula UNIRV</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            placeholder="Digite sua matrícula"
-                                            {...field}
-                                            className="h-12"
-                                            disabled={noRegistration}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+            <Form className="space-y-8 gap-14 flex" action={formAction}>
+                <div className="space-y-8 w-sm flex flex-col">
+                    <h1 className="text-2xl text-center">1. Dados pessoais:</h1>
 
-                        <label className="flex items-center gap-2 text-sm text-muted-foreground mt-[-1rem]">
-                            <input
-                                type="checkbox"
-                                checked={noRegistration}
-                                onChange={(e) => {
-                                    setNoRegistration(e.target.checked)
-                                    if (e.target.checked) {
-                                        form.setValue("registration", "")
-                                    }
-                                }}
-                            />
-                            Não tenho matrícula
-                        </label>
-                    </div>
-
-                    <div className="space-y-8 w-sm flex flex-col">
-                        <h1 className="text-2xl text-center">2. Dados de acesso:</h1>
-
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>E-mail</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Digite seu e-mail" {...field} className="h-12" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                    {/* Campos */}
+                    <Input placeholder="Informe seu nome completo" name="name" className="h-12" />
+                    {/* <Input placeholder="Informe seu CPF" name="cpf" className="h-12" /> */}
+                    <Input placeholder="Informe seu telefone" name="phone" className="h-12" />
+                    <Input placeholder="Digite sua matrícula" name="studentId" className="h-12" disabled={noStudentId} />
+                    <label className="flex items-center gap-2 text-sm text-muted-foreground mt-[-1rem]">
+                        <input
+                            type="checkbox"
+                            checked={noStudentId}
+                            onChange={(e) => {
+                                setNoStudentId(e.target.checked)
+                                if (e.target.checked) {
+                                    form.setValue("studentId", "")
+                                }
+                            }}
                         />
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Senha</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Digite sua senha" {...field} className="h-12" type="password" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="confirmPassword"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Confirmar senha</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Confirme sua senha" {...field} className="h-12" type="password" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        Não tenho matrícula
+                    </label>
+                </div>
 
-                        <Button type="submit" className="w-full h-12 mt-5.5">Cadastrar</Button>
+                <div className="space-y-8 w-sm flex flex-col">
+                    <h1 className="text-2xl text-center">2. Dados de acesso:</h1>
 
-                        <p className="text-center">
-                            Já tem uma conta?{" "}
-                            <Link href={"/login"} className="text-primary underline hover:text-dark-gray transition duration-250">
-                                Logar
-                            </Link>
-                        </p>
-                    </div>
-                </form>
+                    <Input placeholder="Digite seu e-mail" name="email" className="h-12" />
+                    <Input placeholder="Digite sua senha" name="password" className="h-12" type="password" />
+                    <Input placeholder="Confirme sua senha" name="confirmPassword" className="h-12" type="password" />
+
+                    <Button type="submit" className="w-full h-12 mt-5.5" disabled={isPending}>
+                        {isPending && <Loader2 className="animate-spin" />}
+                        Cadastrar
+                    </Button>
+
+                    <p className="text-center">
+                        Já tem uma conta?{" "}
+                        <Link href={"/login"} className="text-primary underline hover:text-dark-gray transition duration-250">
+                            Logar
+                        </Link>
+                    </p>
+                </div>
             </Form>
         </div>
     );
