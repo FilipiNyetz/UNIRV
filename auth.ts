@@ -31,24 +31,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // Se está logando agora, adiciona os dados
       if (user) {
         token.id = user.id;
         token.name = user.name;
         token.email = user.email;
-        token.phone = user.phone;
         token.studentId = user.studentId;
-        // Adicione mais campos se necessário
       }
       return token;
     },
     async session({ session, token }) {
-      // Passa os dados do token para a session
       if (token) {
         session.user.id = token.id as string;
         session.user.name = token.name;
         session.user.email = token.email ?? "";
-        session.user.phone = token.phone;
         session.user.studentId = token.studentId as string | undefined;
       }
       return session;
