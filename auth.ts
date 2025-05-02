@@ -46,7 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string;
         session.user.name = token.name;
         session.user.email = token.email ?? "";
-        session.user.cpf = token.cpf ?? "";
+        session.user.cpf = token.cpf as string | undefined;
         session.user.studentId = token.studentId as string | undefined;
       }
       return session;

@@ -81,7 +81,15 @@ export function Modal({ isOpen, onClose, event, isAluno, user }: ModalProps) {
                     </DialogTitle>
 
                     <div className="text-primary font-semibold text-lg">
-                        Festa Junina <span className="text-primary-darker">R$ 35,00</span>
+                        {event?.name} <span className="text-primary-darker">
+                            {isAluno ? event?.Batch[0]?.Tickets[0]?.student_price.toLocaleString('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }) : event?.Batch[0]?.Tickets[0]?.external_price.toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </span>
                     </div>
 
                     <div className="flex items-center justify-between gap-4 mt-2 w-55">
