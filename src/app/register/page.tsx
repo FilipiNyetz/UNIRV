@@ -42,6 +42,7 @@ const RegisterPage = () => {
         defaultValues: {
             name: "",
             phone: "",
+            cpf: "",
             studentId: "",
             email: "",
             password: "",
@@ -69,13 +70,26 @@ const RegisterPage = () => {
                     <h1 className="text-2xl text-center">1. Dados pessoais:</h1>
 
                     {/* Campos */}
-                    <Input placeholder="Informe seu nome completo" name="name" className="h-12" />
-                    {/* <Input placeholder="Informe seu CPF" name="cpf" className="h-12" /> */}
-                    <Input placeholder="Informe seu telefone" name="phone" className="h-12" />
-                    <Input placeholder="Digite sua matrícula" name="studentId" className="h-12" disabled={noStudentId} />
+                    <div className="flex flex-col gap-2">
+                        <label>Nome Completo</label>
+                        <Input placeholder="Informe seu nome completo" name="name" className="h-12" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label>CPF</label>
+                        <Input placeholder="Informe seu CPF" name="cpf" className="h-12" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label>Telefone</label>
+                        <Input placeholder="Informe seu telefone" name="phone" className="h-12" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label>Matrícula UNIRV</label>
+                        <Input placeholder="Digite sua matrícula" name="studentId" className="h-12" disabled={noStudentId} />
+                    </div>
                     <label className="flex items-center gap-2 text-sm text-muted-foreground mt-[-1rem]">
                         <input
                             type="checkbox"
+                            className="cursor-pointer"
                             checked={noStudentId}
                             onChange={(e) => {
                                 setNoStudentId(e.target.checked)
@@ -91,11 +105,20 @@ const RegisterPage = () => {
                 <div className="space-y-8 w-sm flex flex-col">
                     <h1 className="text-2xl text-center">2. Dados de acesso:</h1>
 
-                    <Input placeholder="Digite seu e-mail" name="email" className="h-12" />
-                    <Input placeholder="Digite sua senha" name="password" className="h-12" type="password" />
-                    <Input placeholder="Confirme sua senha" name="confirmPassword" className="h-12" type="password" />
+                    <div className="flex flex-col gap-2">
+                        <label>E-mail</label>
+                        <Input placeholder="Digite seu e-mail" name="email" className="h-12" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label>Senha</label>
+                        <Input placeholder="Digite sua senha" name="password" className="h-12" type="password" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <label>Confirmar Senha</label>
+                        <Input placeholder="Confirme sua senha" name="confirmPassword" className="h-12" type="password" />
+                    </div>
 
-                    <Button type="submit" className="w-full h-12 mt-5.5" disabled={isPending}>
+                    <Button type="submit" className="w-full h-12 mt-8" disabled={isPending}>
                         {isPending && <Loader2 className="animate-spin" />}
                         Cadastrar
                     </Button>

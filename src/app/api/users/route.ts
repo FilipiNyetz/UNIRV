@@ -8,6 +8,7 @@ export async function GET() {
                 id: true,
                 name: true,
                 phone: true,
+                cpf: true,
                 email: true,
                 studentId: true,
                 createdAt: true,
