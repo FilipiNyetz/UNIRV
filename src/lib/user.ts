@@ -6,6 +6,7 @@ export type User = {
   name: string;
   phone: string;
   email: string;
+  cpf: string;
   studentId?: string;
   password?: string;
 };
@@ -23,6 +24,7 @@ export async function findUserByCredentials(
         email: true,
         name: true,
         phone: true,
+        cpf: true,
         password: true,
         studentId: true
     },

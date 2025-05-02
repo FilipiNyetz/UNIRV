@@ -21,6 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: user.email,
             name: user.name,
             phone: user.phone,
+            cpf: user.cpf,
             studentId: user.studentId
           };
         } else {
@@ -36,6 +37,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.name = user.name;
         token.email = user.email;
         token.studentId = user.studentId;
+        token.cpf = user.cpf;
       }
       return token;
     },
@@ -44,6 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string;
         session.user.name = token.name;
         session.user.email = token.email ?? "";
+        session.user.cpf = token.cpf ?? "";
         session.user.studentId = token.studentId as string | undefined;
       }
       return session;

@@ -15,18 +15,18 @@ function generateIdempotencyKey() {
 
 // 👇 Aqui está a exportação correta para um handler POST
 export async function POST(req: Request) {
+    const { data } = await req.json();
     try {
         const body = {
-            transaction_amount: 0.01,
-            description: "Pagamento via PIX teste",
+            transaction_amount: data.amount,
+            description: data.description,
             payment_method_id: "pix",
             payer: {
-                email: "filipi@gmail.com",
-                first_name: "Filipi",
-                last_name: "Stein",
+                email: data.payer.email,
+                first_name: data.payer.first_name,
                 identification: {
                     type: "CPF",
-                    number: "02954349107"
+                    number: data.payer.identification.number,
                 }
             },
             notification_url: 'https://unirv-app.qtcojd.easypanel.host/api/mercadopago/webhook',

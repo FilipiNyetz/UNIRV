@@ -8,21 +8,44 @@ import { Button } from "../ui/button";
 import PixPayment from "../QRCode";
 import { api } from "../../../service/api";
 import { Skeleton } from "@/components/ui/skeleton"
+import { Batch, Event, Ticket, User } from "@prisma/client";
+
+interface EventWithBatchsAndTickets extends Event {
+  Batch: (Batch & {
+    Tickets: Ticket[]
+  })[];
+} 
 
 type ModalProps = {
     isOpen: boolean;
     onClose: () => void;
+    event: EventWithBatchsAndTickets | null;
+    isAluno?: boolean;
+    user: User | null;
 };
 
 
-export function Modal({ isOpen, onClose }: ModalProps) {
+export function Modal({ isOpen, onClose, event, isAluno, user }: ModalProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [qrCode, setQrCode] = useState<{ pix_code: string } | null>(null);
 
     const getQRCode = async () => {
         setIsLoading(true);
         try {
-            const response = await api.post('/mercadopago');
+            const response = await api.post('/mercadopago', {
+                data: {
+                    description: `Ingresso para o evento ${event?.name}`,
+                    amount: isAluno ? event?.Batch[0]?.Tickets[0]?.student_price : event?.Batch[0]?.Tickets[0]?.external_price,
+                    payer: {
+                        email: user?.email,
+                        first_name: user?.name,
+                        identification: {
+                            type: "CPF",
+                            number: user?.cpf
+                        }
+                    }
+                }
+            });
             setQrCode(response.data)
 
         } catch (error) {

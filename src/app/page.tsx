@@ -44,7 +44,6 @@ export default function Home() {
     setIsLoading(true);
     api.get("/events").then((response) => {
       setEventsData(response.data)
-      console.log("events", response.data);
       setIsLoading(false);
     })
   }
@@ -121,7 +120,7 @@ export default function Home() {
                 </CardContent>
               </Card>
             </div>
-            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} />
+            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} event={event} isAluno={isAluno} user={userSession?.user} />
           </div>
         )
       })}

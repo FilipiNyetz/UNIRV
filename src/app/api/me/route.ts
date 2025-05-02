@@ -21,6 +21,7 @@ export async function GET(request: Request) {
                 name: true,
                 phone: true,
                 email: true,
+                cpf: true,
                 studentId: true,
                 createdAt: true,
                 updatedAt: true,

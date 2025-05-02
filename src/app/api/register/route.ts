@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { hashSync } from "bcrypt";
 
 export async function POST(request: Request) {
-    console.log(request)
     try {
         const { name, phone, cpf, email, password, studentId } = await request.json();
 
