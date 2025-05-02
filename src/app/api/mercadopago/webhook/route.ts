@@ -4,7 +4,7 @@ import { MercadoPagoConfig, Payment } from 'mercadopago';
 
 // Configuração do cliente Mercado Pago
 const client = new MercadoPagoConfig({
-    accessToken: process.env.ACESSO_TOKEN!, // Certifique-se de definir essa variável no ambiente do servidor
+    accessToken: process.env.ACESS_TOKEN!,
     options: { timeout: 5000 },
 });
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         // Aqui você pode salvar ou atualizar dados no seu banco de dados
         if (status === 'approved') {
             console.log(`✅ Pagamento aprovado para ${email} (ID: ${paymentId})`);
-            // Ex: await atualizarStatusPagamento(paymentId, 'aprovado');
+
         } else {
             console.log(`ℹ️ Status do pagamento ${paymentId}: ${status}`);
         }
