@@ -1,9 +1,13 @@
 "use client"
 
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Copy, Map, MapPin, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import PixPayment from "../QRCode";
+import { api } from "../../../service/api";
+import { Skeleton } from "@/components/ui/skeleton"
 
 type ModalProps = {
     isOpen: boolean;
@@ -12,10 +16,28 @@ type ModalProps = {
 
 
 export function Modal({ isOpen, onClose }: ModalProps) {
+    const [isLoading, setIsLoading] = useState(true);
+    const [qrCode, setQrCode] = useState<{ pix_code: string } | null>(null);
+
+    const getQRCode = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.post('/mercadopago');
+            setQrCode(response.data)
+
+        } catch (error) {
+            console.error('Error fetching QR code:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
 
     const copyToClipboard = async () => {
         try {
-            await navigator.clipboard.writeText('AQUI VAI SER O PIX');
+            if (qrCode?.pix_code) {
+                await navigator.clipboard.writeText(qrCode.pix_code);
+            }
             alert("Chave pix copiada!")
             console.log('Texto copiado para a área de transferência');
         } catch (err) {
@@ -23,11 +45,15 @@ export function Modal({ isOpen, onClose }: ModalProps) {
         }
     };
 
+    useEffect(() => {
+        isOpen && getQRCode()
+    }, [isOpen])
+
     return (
         <div>
             <Dialog open={isOpen}>
                 <DialogContent className="flex flex-col items-center justify-center text-center p-6 max-w-sm">
-                    <DialogTitle className="text-xl font-semibold -mb-2">
+                    <DialogTitle className="text-xl font-semibold mb-1">
                         Pagamento do Ingresso
                     </DialogTitle>
 
@@ -35,7 +61,7 @@ export function Modal({ isOpen, onClose }: ModalProps) {
                         Festa Junina <span className="text-primary-darker">R$ 35,00</span>
                     </div>
 
-                    <div className="flex items-center justify-between gap-4 mt-4 w-55">
+                    <div className="flex items-center justify-between gap-4 mt-2 w-55">
                         <div className="flex flex-col items-center border rounded-xl overflow-hidden shadow-md w-20">
                             <div className="text-xl font-bold mt-2">30</div>
                             <div className="text-sm text-gray-600 mb-2">Sex</div>
@@ -43,7 +69,6 @@ export function Modal({ isOpen, onClose }: ModalProps) {
                                 Abr.
                             </div>
                         </div>
-
 
                         <div className="flex flex-col items-center">
                             <div className="text-lg font-medium">Às 20:00h</div>
@@ -57,8 +82,10 @@ export function Modal({ isOpen, onClose }: ModalProps) {
                     {/* Pix info */}
                     <DialogDescription className="w-full text-center">
                         <div className="flex flex-col items-center">
-                            <span className="text-2xl text-black">Pix:</span>
-                            <span className="mt-2 text-sm text-gray-700 break-words max-w-xs">aocacaiwocaowcioawc-cowacioawicoac-pcac-testepix</span>
+
+                            {isLoading ? 
+                                <Skeleton className="h-[200px] w-[200px] rounded-xl" /> : <PixPayment pixCode={qrCode?.pix_code || ''}/>
+                            }
 
                             {/* <div className="flex items-center gap-2 mt-2 text-sm text-black cursor-pointer hover:text-primary-darker transition"> */}
 
