@@ -1,5 +1,7 @@
 // src/app/api/mercadopago/route.ts
+import { db } from "@/lib/prisma";
 import { MercadoPagoConfig, Payment } from "mercadopago";
+import { metadata } from "@/app/layout";
 
 const client = new MercadoPagoConfig({
     accessToken: process.env.ACESS_TOKEN!,
@@ -17,6 +19,15 @@ function generateIdempotencyKey() {
 export async function POST(req: Request) {
     const { data } = await req.json();
     try {
+        const order = await db.order.create({ 
+            data:{
+                userId: data.userId,
+                ticketId: data.ticketId,
+                status: "PENDING",
+                payment: "PIX",
+            }
+        });
+
         const body = {
             transaction_amount: data.amount,
             description: data.description,
@@ -30,6 +41,9 @@ export async function POST(req: Request) {
                 }
             },
             notification_url: 'https://unirv-app.qtcojd.easypanel.host/api/mercadopago/webhook',
+            metadata: {
+                orderId: order.id,
+            },
         };
 
         const requestOptions = {
