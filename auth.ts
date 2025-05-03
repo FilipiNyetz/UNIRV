@@ -22,6 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             name: user.name,
             phone: user.phone,
             cpf: user.cpf,
+            role: user.role,
             studentId: user.studentId
           };
         } else {
@@ -38,6 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email;
         token.studentId = user.studentId;
         token.cpf = user.cpf;
+        token.role = user.role;
       }
       return token;
     },
@@ -48,6 +50,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.email = token.email ?? "";
         session.user.cpf = token.cpf as string | undefined;
         session.user.studentId = token.studentId as string | undefined;
+        session.user.role = token.role;
       }
       return session;
     },

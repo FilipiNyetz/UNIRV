@@ -7,6 +7,7 @@ export type User = {
   phone: string;
   email: string;
   cpf?: string;
+  role: number;
   studentId?: string;
   password?: string;
 };
@@ -25,6 +26,7 @@ export async function findUserByCredentials(
         name: true,
         phone: true,
         cpf: true,
+        role: true,
         password: true,
         studentId: true
     },
@@ -41,6 +43,7 @@ export async function findUserByCredentials(
       ...user,
       name: user.name ?? '',
       cpf: user.cpf ?? undefined,
+      role: user.role,
       studentId: user.studentId ?? undefined,
     };
   }

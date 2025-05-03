@@ -16,11 +16,12 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   name      String
-  email     String  @unique
+  email     String   @unique
   phone     String
-  cpf       String  @unique
+  cpf       String   @unique
   studentId String?  @unique
   password  String
+  role      Int      @default(0) // 0 = user, 1 = admin
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Order     Order[]
