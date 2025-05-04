@@ -43,14 +43,20 @@ const LoginPage = () => {
 
     return (
         <>
-{state?.error && (
-    <div className="mt-8 text-red-500 text-sm">{state.error}</div>
-)}
-        <div className="w-auto h-screen flex flex-col items-center px-4 py-8 gap-12">
+        {state?.error && (
+            <div className="mt-8 text-red-500 text-sm">{state.error}</div>
+        )}
+        <div className="w-auto h-auto flex flex-col items-center px-4 py-8 gap-12">
             <h1 className="text-3xl">Login</h1>
-            <Form className="space-y-8 w-sm flex flex-col" action={formAction} >
-                <Input placeholder="Digite seu e-mail" name="email" className="h-12"/>
-                <Input placeholder="Digite sua senha" name="password" className="h-12"/>
+            <Form className="space-y-8 w-sm px-4 sm:px-0 flex flex-col" action={formAction} >
+                <div className="flex flex-col gap-2">
+                    <label>E-mail</label>
+                    <Input placeholder="Digite seu e-mail" name="email" className="h-12"/>
+                </div> 
+                <div className="flex flex-col gap-2">
+                    <label>Senha</label>
+                    <Input placeholder="Digite sua senha" name="password" className="h-12"/>
+                </div> 
                     <Link href={"#"} className="text-right underline hover:scale-103 hover:text-gray-700 transition duration-250">Esqueceu a senha?</Link>
                     <Button type="submit" className="w-full h-12" disabled={isPending}>
                         {isPending && <Loader2 className="animate-spin" />}

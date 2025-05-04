@@ -51,7 +51,7 @@ const RegisterPage = () => {
     });
 
     return (
-        <div className="w-auto h-screen flex flex-col items-center px-4 py-8 gap-12">
+        <div className="w-auto h-auto flex flex-col items-center px-4 py-8 gap-12">
             <div className="flex gap-5 items-center">
                 <h1 className="text-3xl">Registrar-se</h1>
                 <Image src={"/Brasao.png"} alt={"Brasão da turma"} width={80} height={80} />
@@ -65,8 +65,8 @@ const RegisterPage = () => {
                 <p className="text-green-600 text-sm">{state.success}</p>
             )}
 
-            <Form className="space-y-8 gap-14 flex" action={formAction}>
-                <div className="space-y-8 w-sm flex flex-col">
+            <Form className="space-y-8 gap-14 w-96 px-4 flex flex-col lg:flex-row lg:w-full" action={formAction}>
+                <div className="space-y-8 flex flex-col lg:w-sm">
                     <h1 className="text-2xl text-center">1. Dados pessoais:</h1>
 
                     {/* Campos */}
@@ -102,7 +102,7 @@ const RegisterPage = () => {
                     </label>
                 </div>
 
-                <div className="space-y-8 w-sm flex flex-col">
+                <div className="space-y-8 flex flex-col lg:w-sm">
                     <h1 className="text-2xl text-center">2. Dados de acesso:</h1>
 
                     <div className="flex flex-col gap-2">

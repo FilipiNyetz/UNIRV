@@ -14,11 +14,11 @@ export async function Sidebar() {
     <div className="w-full bg-muted/40">
       {/* MOBILE: Sheet menu */}
       <div className="sm:hidden w-full">
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-end px-4 border-b bg-background">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-end px-4 border-b bg-primary">
           <Sheet>
             <SheetTrigger asChild>
-              <Button size="icon" variant="outline">
-                <MenuIcon className="w-5 h-5" />
+              <Button size="icon" variant="outline" className='bg-dark-gray border-none'>
+                <MenuIcon className="w-5 h-5 text-white" />
                 <span className="sr-only">Abrir/Fechar menu</span>
               </Button>
             </SheetTrigger>
@@ -73,7 +73,7 @@ export async function Sidebar() {
             Início
           </Link>
           {isAdmin &&
-            <Link href="/sales" className="flex items-center gap-4 px-2.5 text-black">
+            <Link href="/sales" className="flex items-center gap-2 px-2.5 text-black">
               <ClipboardList className="h-5 w-5" />
               Vendas
             </Link>
