@@ -30,7 +30,16 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
     try {
-        const { id, ...data } = await request.json();
+        const url = new URL(request.url);
+        const id = url.searchParams.get("id");
+        if (!id) {
+            return NextResponse.json(
+                { message: "ID do lote é obrigatório" },
+                { status: 400 }
+            );
+        }
+
+        const data = await request.json();
         const updatedBatch = await db.batch.update({
             where: { id },
             data,

@@ -16,6 +16,7 @@ import {
 import { api } from "../../../service/api";
 import { useSession } from "next-auth/react";
 import { Order, Ticket, User } from "@prisma/client";
+import OrderStatusBadge from "@/components/order-status";
 
 interface OrderWithTicketAndUser extends Order {
   ticket: Ticket
@@ -35,7 +36,6 @@ const SalesPage = () => {
     const getAllOrders = async () => {
         setLoading(true);
         const response = await api.get("/orders");
-        console.log(response.data)
         setOrders(response.data);
     }
 
@@ -64,7 +64,9 @@ const SalesPage = () => {
                                 <TableCell className="font-medium">{order?.id}</TableCell>
                                 <TableCell className="font-medium">{order?.user?.name}</TableCell>
                                 <TableCell className="font-medium">{order?.user?.email}</TableCell>
-                                <TableCell className="font-medium">{order?.status}</TableCell>
+                                <TableCell className="font-medium">
+                                    <OrderStatusBadge status={order?.status === "CANCELED" ? "CANCELLED" : order?.status}></OrderStatusBadge>
+                                </TableCell>
                                 <TableCell className="font-medium">{ticketPrice.toLocaleString('pt-BR', {
                                 style: 'currency',
                                 currency: 'BRL',

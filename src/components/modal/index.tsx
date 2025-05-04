@@ -22,16 +22,18 @@ type ModalProps = {
     event: EventWithBatchsAndTickets | null;
     isAluno?: boolean;
     user: User | null;
+    onSuccess?: () => void;
 };
 
 
-export function Modal({ isOpen, onClose, event, isAluno, user }: ModalProps) {
+export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: ModalProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [qrCode, setQrCode] = useState<{ pix_code: string } | null>(null);
 
     const getQRCode = async () => {
         setIsLoading(true);
         try {
+             // 1. Criar o QR Code no Mercado Pago
             const response = await api.post('/mercadopago', {
                 data: {
                     description: `Ingresso para o evento ${event?.name}`,
@@ -46,7 +48,22 @@ export function Modal({ isOpen, onClose, event, isAluno, user }: ModalProps) {
                     }
                 }
             });
-            setQrCode(response.data)
+            setQrCode(response.data);
+
+            // 2. Criar a Order
+            await api.post('/orders',  {
+                data: {
+                    userId: user?.id,
+                    ticketId: event?.Batch[0]?.Tickets[0]?.id
+                }
+            })
+
+            // 3. Atualizar o availableTickets no Batch
+            await api.patch(`/batchs?id=${event?.Batch[0]?.id}`, {
+                availableTickets: event?.Batch[0]?.availableTickets - 1
+            });
+
+            if (onSuccess) onSuccess();
 
         } catch (error) {
             console.error('Error fetching QR code:', error);

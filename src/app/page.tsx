@@ -79,7 +79,7 @@ export default function Home() {
                 <CardContent className="flex items-center flex-col gap-0">
                   <h2 className="text-lg">
                     <span className="text-primary-darker font-semibold">
-                      {event?.Batch[0]?.name}
+                      {event?.Batch[0]?.name} ({event?.Batch[0]?.availableTickets})
                     </span>
                   </h2>
                   <div className="flex w-full h-full gap-6">
@@ -120,7 +120,14 @@ export default function Home() {
                 </CardContent>
               </Card>
             </div>
-            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} event={event} isAluno={isAluno} user={userSession?.user} />
+            <Modal 
+            isOpen={isOpen} 
+            onClose={() => setIsOpen(false)} 
+            event={event} 
+            isAluno={isAluno} 
+            user={userSession?.user} 
+            onSuccess={getEvents}
+            />
           </div>
         )
       })}
