@@ -52,6 +52,7 @@ export default function Home() {
     getEvents()
   }, [])
 
+
   return (
     <main className="h-auto px-4 py-8 flex flex-col items-center">
       <div className="flex flex-col max-w-md w-full text-center mb-2 items-center">
@@ -74,52 +75,55 @@ export default function Home() {
               <h3 className="text-m">{formattedDate}</h3>
             </div>
 
-            <div className="mt-2 w-full max-w-md">
-              <Card>
-                <CardContent className="flex items-center flex-col gap-0">
-                  <h2 className="text-lg">
-                    <span className="text-primary-darker font-semibold">
-                      {event?.Batch[0]?.name} ({event?.Batch[0]?.availableTickets})
-                    </span>
-                  </h2>
-                  <div className="flex w-full h-full gap-6">
-                    <div className="flex flex-col justify-center items-center w-full">
-                      <h3 className="text-xl">Aluno</h3>
-                      <h1 className="font-semibold">
-                        {event?.Batch[0]?.Tickets[0]?.student_price.toLocaleString('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        })}
-                      </h1>
-                      <Button
-                        disabled={!isAluno}
-                        onClick={() => setIsOpen(true)}
-                      >
-                        COMPRAR
-                      </Button>
-                    </div>
+            {event.Batch.map((batch) => 
+              <div className={`mt-2 w-full max-w-md`}>
+                <Card variant={`${!batch.active ? "disabled" : "default"}`}>
+                  <CardContent className="flex items-center flex-col gap-0">
+                    <h2 className="text-lg">
+                      <span className="text-primary-darker font-semibold">
+                        {batch?.name} ({batch?.availableTickets})
+                      </span>
+                    </h2>
+                    <div className="flex w-full h-full gap-6">
+                      <div className="flex flex-col justify-center items-center w-full">
+                        <h3 className="text-xl">Aluno</h3>
+                        <h1 className="font-semibold">
+                          {batch?.Tickets[0]?.student_price.toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </h1>
+                        <Button
+                          disabled={!isAluno}
+                          onClick={() => setIsOpen(true)}
+                        >
+                          COMPRAR
+                        </Button>
+                      </div>
 
-                    <div className="border-l border-black h-full" />
+                      <div className="border-l border-black h-full" />
 
-                    <div className="flex flex-col justify-center items-center w-full">
-                      <h3 className="text-xl">Externo</h3>
-                      <h1 className="font-semibold">
-                        {event?.Batch[0]?.Tickets[0]?.external_price.toLocaleString('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        })}
-                      </h1>
-                      <Button
-                        disabled={isAluno}
-                        onClick={() => setIsOpen(true)}
-                      >
-                        COMPRAR
-                      </Button>
+                      <div className="flex flex-col justify-center items-center w-full">
+                        <h3 className="text-xl">Externo</h3>
+                        <h1 className="font-semibold">
+                          {batch?.Tickets[0]?.external_price.toLocaleString('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          })}
+                        </h1>
+                        <Button
+                          disabled={isAluno}
+                          onClick={() => setIsOpen(true)}
+                        >
+                          COMPRAR
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
             <Modal 
             isOpen={isOpen} 
             onClose={() => setIsOpen(false)} 
