@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
         const url = new URL(req.url);
         const paymentIdOrder = url.searchParams.get("paymentId");
 
+        console.log('🔔 PaymentID:', paymentIdOrder);
+
         if (!paymentIdOrder) {
             console.warn('⚠️ paymentIdOrder is null or undefined');
             return NextResponse.json({ error: 'Invalid paymentIdOrder' }, { status: 400 });
@@ -26,12 +28,14 @@ export async function POST(req: NextRequest) {
         console.log('🔔 Notificação recebida do Mercado Pago:', body);
         
         const paymentId = body?.data?.id;
+
         if (!paymentId) {
             console.warn('⚠️ ID de pagamento ausente na notificação');
             return NextResponse.json({ error: 'ID de pagamento não encontrado' }, { status: 400 });
         }
+
         // Atualiza o paymentId na order com o paymentIdOrder
-        await db.order.updateMany({
+        const order = await db.order.update({
             where: { paymentId: paymentIdOrder },
             data: { paymentId },
         });
@@ -46,19 +50,16 @@ export async function POST(req: NextRequest) {
             console.log(`✅ Pagamento aprovado para ${email} (ID: ${paymentId})`);
 
             // Atualiza a order com o STATUS COMPLETED
-            await db.order.updateMany({
-                where: { paymentId },
+            await db.order.update({
+                where: { id: order.id },
                 data: { status: "COMPLETED" },
             });
-       
-            
-
         } else {
             console.log(`ℹ️ Status do pagamento ${paymentId}: ${status}`);
             
             // Atualiza a order com o STATUS CANCELED
-            await db.order.updateMany({
-                where: { paymentId },
+            await db.order.update({
+                where: { id: order.id },
                 data: { status: "CANCELED" },
             });
         }
