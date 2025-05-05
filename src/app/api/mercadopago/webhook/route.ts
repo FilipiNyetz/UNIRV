@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
             // Atualiza a order com o STATUS COMPLETED
             await db.order.updateMany({
-                where: { paymentId: paymentIdOrder },
+                where: { paymentId },
                 data: { status: "COMPLETED" },
             });
        
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
             
             // Atualiza a order com o STATUS CANCELED
             await db.order.updateMany({
-                where: { paymentId: paymentIdOrder },
+                where: { paymentId },
                 data: { status: "CANCELED" },
             });
         }
