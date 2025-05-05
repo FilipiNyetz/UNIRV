@@ -54,14 +54,16 @@ export async function POST(req: NextRequest) {
                 where: { id: order.id },
                 data: { status: "COMPLETED" },
             });
-        } else {
+        } else if (status === 'cancelled') {
             console.log(`ℹ️ Status do pagamento ${paymentId}: ${status}`);
-            
+                
             // Atualiza a order com o STATUS CANCELED
             await db.order.update({
                 where: { id: order.id },
                 data: { status: "CANCELED" },
             });
+        } else {
+            console.log(`ℹ️ Status do pagamento ${paymentId}: ${status}`);
         }
 
         return NextResponse.json({ success: true });
