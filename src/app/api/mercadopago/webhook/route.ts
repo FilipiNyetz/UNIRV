@@ -1,6 +1,8 @@
 // src/app/api/mercadopago/webhook/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
+import { api } from '../../../../../service/api';
+import { db } from '@/lib/prisma';
 
 // Configuração do cliente Mercado Pago
 const client = new MercadoPagoConfig({
@@ -14,6 +16,11 @@ const payment = new Payment(client);
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
+        const url = new URL(req.url);
+        const paymentIdOrder = url.searchParams.get("paymentId");
+
+        console.log('🔔 Notificação Body:', body);
+        console.log('Notificação paymentIdOrder:', paymentIdOrder);
 
         console.log('🔔 Notificação recebida do Mercado Pago:', body);
 
@@ -28,12 +35,30 @@ export async function POST(req: NextRequest) {
         const status = paymentData.status;
         const email = paymentData.payer?.email;
 
+        if(paymentIdOrder){
+            await db.order.update({
+                where: { paymentId: paymentIdOrder },
+                data: { paymentId: paymentId },
+            })
+        }
+       
+
         // Aqui você pode salvar ou atualizar dados no seu banco de dados
         if (status === 'approved') {
             console.log(`✅ Pagamento aprovado para ${email} (ID: ${paymentId})`);
 
+            await db.order.update({
+                where: { paymentId: paymentIdOrder },
+                data: { status: "COMPLETED" },
+            })
+            
+
         } else {
             console.log(`ℹ️ Status do pagamento ${paymentId}: ${status}`);
+            await db.order.update({
+                where: { paymentId: paymentIdOrder },
+                data: { status: "CANCELED" },
+            })
         }
 
         return NextResponse.json({ success: true });

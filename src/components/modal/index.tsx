@@ -31,6 +31,7 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
     const [qrCode, setQrCode] = useState<{ pix_code: string } | null>(null);
 
     const getQRCode = async () => {
+        const paymentId = Math.random().toString(36).substr(2, 9);
         setIsLoading(true);
         try {
              // 1. Criar o QR Code no Mercado Pago
@@ -38,6 +39,7 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
                 data: {
                     description: `Ingresso para o evento ${event?.name}`,
                     amount: isAluno ? event?.Batch[0]?.Tickets[0]?.student_price : event?.Batch[0]?.Tickets[0]?.external_price,
+                    paymentId: paymentId,
                     payer: {
                         email: user?.email,
                         first_name: user?.name,
@@ -54,7 +56,8 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
             await api.post('/orders',  {
                 data: {
                     userId: user?.id,
-                    ticketId: event?.Batch[0]?.Tickets[0]?.id
+                    ticketId: event?.Batch[0]?.Tickets[0]?.id,
+                    paymentId 
                 }
             })
 

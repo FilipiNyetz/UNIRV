@@ -37,6 +37,7 @@ export async function POST(request: Request) {
                 ticketId: data.ticketId,
                 status: "PENDING",
                 payment: "PIX",
+                paymentId: data.paymentId,
             },
         });
 
