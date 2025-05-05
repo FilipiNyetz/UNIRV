@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Sidebar } from '@/components/sidebar';
 import { Poppins } from 'next/font/google';
 import { SessionProvider } from 'next-auth/react'
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -26,7 +27,6 @@ export default function RootLayout({
     <html lang="pt-BR" className={poppins.variable}>
       <body className="antialiased relative ">
 
-
         {/* Sidebar fixa no topo */}
         <Sidebar />
 
@@ -48,6 +48,7 @@ export default function RootLayout({
               objectFit='contain' />
           </div> */}
           <SessionProvider>{children}</SessionProvider>
+          <Toaster />
         </main>
 
       </body>
