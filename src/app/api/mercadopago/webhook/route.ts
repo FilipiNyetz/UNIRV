@@ -1,7 +1,6 @@
 // src/app/api/mercadopago/webhook/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { MercadoPagoConfig, Payment } from 'mercadopago';
-import { api } from '../../../../../service/api';
 import { db } from '@/lib/prisma';
 
 // Configuração do cliente Mercado Pago
@@ -19,46 +18,49 @@ export async function POST(req: NextRequest) {
         const url = new URL(req.url);
         const paymentIdOrder = url.searchParams.get("paymentId");
 
-        console.log('🔔 Notificação Body:', body);
-        console.log('Notificação paymentIdOrder:', paymentIdOrder);
+        if (!paymentIdOrder) {
+            console.warn('⚠️ paymentIdOrder is null or undefined');
+            return NextResponse.json({ error: 'Invalid paymentIdOrder' }, { status: 400 });
+        }
 
         console.log('🔔 Notificação recebida do Mercado Pago:', body);
-
+        
         const paymentId = body?.data?.id;
         if (!paymentId) {
             console.warn('⚠️ ID de pagamento ausente na notificação');
             return NextResponse.json({ error: 'ID de pagamento não encontrado' }, { status: 400 });
         }
+        // Atualiza o paymentId na order com o paymentIdOrder
+        await db.order.updateMany({
+            where: { paymentId: paymentIdOrder },
+            data: { paymentId },
+        });
 
         // Recupera os dados detalhados do pagamento pelo ID
         const paymentData = await payment.get({ id: paymentId });
         const status = paymentData.status;
         const email = paymentData.payer?.email;
 
-        if(paymentIdOrder){
-            await db.order.update({
-                where: { paymentId: paymentIdOrder },
-                data: { paymentId: paymentId },
-            })
-        }
-       
-
         // Aqui você pode salvar ou atualizar dados no seu banco de dados
         if (status === 'approved') {
             console.log(`✅ Pagamento aprovado para ${email} (ID: ${paymentId})`);
 
-            await db.order.update({
+            // Atualiza a order com o STATUS COMPLETED
+            await db.order.updateMany({
                 where: { paymentId: paymentIdOrder },
                 data: { status: "COMPLETED" },
-            })
+            });
+       
             
 
         } else {
             console.log(`ℹ️ Status do pagamento ${paymentId}: ${status}`);
-            await db.order.update({
+            
+            // Atualiza a order com o STATUS CANCELED
+            await db.order.updateMany({
                 where: { paymentId: paymentIdOrder },
                 data: { status: "CANCELED" },
-            })
+            });
         }
 
         return NextResponse.json({ success: true });
