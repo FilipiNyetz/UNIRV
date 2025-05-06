@@ -1,58 +1,53 @@
-// src/app/api/mercadopago/route.ts
-import { MercadoPagoConfig, Payment } from "mercadopago";
+// src/app/api/order/route.ts
+import { db } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-const client = new MercadoPagoConfig({
-    accessToken: process.env.ACESS_TOKEN!,
-    options: { timeout: 5000 },
-});
+export async function GET() {
+    try {
+        const orders = await db.order.findMany({
+            include: {
+                user: true,
+                ticket: true,
+            },
+        });
 
-const payment = new Payment(client);
-
-function generateIdempotencyKey() {
-    return 'key-' + Math.random().toString(36).substring(2, 15)
-        + Math.random().toString(36).substring(2, 15);
+        return NextResponse.json(orders, { status: 200 });
+    } catch (error) {
+        console.error("Erro ao buscar os pedidos:", error);
+        return NextResponse.json(
+            { message: "Falha ao buscar pedidos" },
+            { status: 500 }
+        );
+    }
 }
 
-const expirationDate = new Date(Date.now() + 30 * 60 * 1000).toISOString();
-
-// 👇 Aqui está a exportação correta para um handler POST
-export async function POST(req: Request) {
-    const { data } = await req.json();
-
+export async function POST(request: Request) {
     try {
-        const body = {
-            transaction_amount: data.amount,
-            description: data.description,
-            payment_method_id: "pix",
-            payer: {
-                email: data.payer.email,
-                first_name: data.payer.first_name,
-                identification: {
-                    type: "CPF",
-                    number: data.payer.identification.number,
-                }
+        const { data } = await request.json();
+
+        if (!data.userId || !data.ticketId || !data.paymentId) {
+            return NextResponse.json(
+                { message: "Dados incompletos para criar o pedido" },
+                { status: 400 }
+            );
+        }
+
+        const newOrder = await db.order.create({
+            data: {
+                userId: data.userId,
+                ticketId: data.ticketId,
+                status: "PENDING",
+                payment: "PIX",
+                paymentId: data.paymentId,
             },
-            notification_url: `https://unirv-app.qtcojd.easypanel.host/api/mercadopago/webhook?paymentId=${data.paymentId}`,
-            date_of_expiration: expirationDate,
-        };
+        });
 
-        const requestOptions = {
-            idempotencyKey: generateIdempotencyKey(),
-        };
-
-        const result = await payment.create({ body, requestOptions });
-
-        const qrCode = result.point_of_interaction?.transaction_data?.qr_code;
-
-        return new Response(
-            JSON.stringify({ pix_code: qrCode ?? null }),
-            { status: 200, headers: { "Content-Type": "application/json" } }
-        );
+        return NextResponse.json(newOrder, { status: 201 });
     } catch (error) {
-        console.error("Erro Mercado Pago:", error);
-        return new Response(
-            JSON.stringify({ error: "Erro ao criar pagamento" }),
-            { status: 500, headers: { "Content-Type": "application/json" } }
+        console.error("Erro ao criar o pedido:", error);
+        return NextResponse.json(
+            { message: "Falha ao criar o pedido" },
+            { status: 500 }
         );
     }
 }
