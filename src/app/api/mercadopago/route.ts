@@ -13,6 +13,8 @@ function generateIdempotencyKey() {
         + Math.random().toString(36).substring(2, 15);
 }
 
+const expirationDate = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+
 // 👇 Aqui está a exportação correta para um handler POST
 export async function POST(req: Request) {
     const { data } = await req.json();
@@ -31,6 +33,7 @@ export async function POST(req: Request) {
                 }
             },
             notification_url: `https://unirv-app.qtcojd.easypanel.host/api/mercadopago/webhook?paymentId=${data.paymentId}`,
+            date_of_expiration: expirationDate,
         };
 
         const requestOptions = {
