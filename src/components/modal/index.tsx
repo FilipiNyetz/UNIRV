@@ -11,10 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Batch, Event, Ticket, User } from "@prisma/client";
 
 interface EventWithBatchsAndTickets extends Event {
-  Batch: (Batch & {
-    Tickets: Ticket[]
-  })[];
-} 
+    Batch: (Batch & {
+        Tickets: Ticket[]
+    })[];
+}
 
 type ModalProps = {
     isOpen: boolean;
@@ -34,7 +34,7 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
         const paymentId = Math.random().toString(36).substr(2, 9);
         setIsLoading(true);
         try {
-             // 1. Criar o QR Code no Mercado Pago
+            // 1. Criar o QR Code no Mercado Pago
             const response = await api.post('/mercadopago', {
                 data: {
                     description: `Ingresso para o evento ${event?.name}`,
@@ -47,24 +47,32 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
                             type: "CPF",
                             number: user?.cpf
                         }
-                    }
+                    },
+                    userId: user?.id,  // Enviando o userId do usuário logado
+                    ticketId: event?.Batch[0]?.Tickets[0]?.id,
+
                 }
             });
             setQrCode(response.data);
 
             // 2. Criar a Order
-            await api.post('/orders',  {
+            await api.post('/orders', {
                 data: {
                     userId: user?.id,
                     ticketId: event?.Batch[0]?.Tickets[0]?.id,
-                    paymentId 
+                    paymentId
                 }
             })
 
             // 3. Atualizar o availableTickets no Batch
-            await api.patch(`/batchs?id=${event?.Batch[0]?.id}`, {
-                availableTickets: event?.Batch[0]?.availableTickets - 1
-            });
+            if (event?.Batch?.[0]) {
+                await api.patch(`/batchs?id=${event.Batch[0].id}`, {
+                    availableTickets: event.Batch[0].availableTickets - 1
+                });
+            } else {
+                console.error("Batch não encontrado ou evento inválido");
+            }
+
 
             if (onSuccess) onSuccess();
 
@@ -103,12 +111,12 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
                     <div className="text-primary font-semibold text-lg">
                         {event?.name} <span className="text-primary-darker">
                             {isAluno ? event?.Batch[0]?.Tickets[0]?.student_price.toLocaleString('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        }) : event?.Batch[0]?.Tickets[0]?.external_price.toLocaleString('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                          })}
+                                style: 'currency',
+                                currency: 'BRL',
+                            }) : event?.Batch[0]?.Tickets[0]?.external_price.toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL',
+                            })}
                         </span>
                     </div>
 
@@ -134,8 +142,8 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
                     <DialogDescription className="w-full text-center">
                         <div className="flex flex-col items-center">
 
-                            {isLoading ? 
-                                <Skeleton className="h-[200px] w-[200px] rounded-xl" /> : <PixPayment pixCode={qrCode?.pix_code || ''}/>
+                            {isLoading ?
+                                <Skeleton className="h-[200px] w-[200px] rounded-xl" /> : <PixPayment pixCode={qrCode?.pix_code || ''} />
                             }
 
                             {/* <div className="flex items-center gap-2 mt-2 text-sm text-black cursor-pointer hover:text-primary-darker transition"> */}
@@ -162,7 +170,7 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
                         onClick={onClose}
                         className="ring-offset-background cursor-pointer focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition duration-250 hover:opacity-100 hover:scale-125 focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
                     >
-                        <X className="w-5 h-5"/>
+                        <X className="w-5 h-5" />
                     </button>
                 </DialogContent>
             </Dialog>
