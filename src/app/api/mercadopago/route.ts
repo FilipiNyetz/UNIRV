@@ -1,53 +1,82 @@
-// src/app/api/order/route.ts
+// src/app/api/mercadopago/route.ts
 import { db } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { MercadoPagoConfig, Payment } from "mercadopago";
 
-export async function GET() {
-    try {
-        const orders = await db.order.findMany({
-            include: {
-                user: true,
-                ticket: true,
-            },
-        });
+const client = new MercadoPagoConfig({
+    accessToken: process.env.ACESS_TOKEN!,
+    options: { timeout: 5000 },
+});
 
-        return NextResponse.json(orders, { status: 200 });
-    } catch (error) {
-        console.error("Erro ao buscar os pedidos:", error);
-        return NextResponse.json(
-            { message: "Falha ao buscar pedidos" },
-            { status: 500 }
-        );
-    }
+const payment = new Payment(client);
+
+function generateIdempotencyKey() {
+    return (
+        "key-" +
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15)
+    );
 }
 
-export async function POST(request: Request) {
-    try {
-        const { data } = await request.json();
+const expirationDate = new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
-        if (!data.userId || !data.ticketId || !data.paymentId) {
-            return NextResponse.json(
-                { message: "Dados incompletos para criar o pedido" },
-                { status: 400 }
-            );
+// 👇 Rota do Mercado Pago para gerar pagamento via PIX
+export async function POST(req: Request) {
+    const { data } = await req.json();
+
+    try {
+        const body = {
+            transaction_amount: data.amount,
+            description: data.description,
+            payment_method_id: "pix",
+            payer: {
+                email: data.payer.email,
+                first_name: data.payer.first_name,
+                identification: {
+                    type: "CPF",
+                    number: data.payer.identification.number,
+                },
+            },
+            notification_url: `https://unirv-app.qtcojd.easypanel.host/api/mercadopago/webhook?paymentId=${data.paymentId}`,
+            date_of_expiration: expirationDate,
+        };
+
+        const requestOptions = {
+            idempotencyKey: generateIdempotencyKey(),
+        };
+
+        // Cria o pagamento via Mercado Pago
+        const result = await payment.create({ body, requestOptions });
+
+        const qrCode = result.point_of_interaction?.transaction_data?.qr_code;
+
+        // Verifica se o paymentId existe
+        if (!result.id) {
+            throw new Error("Payment ID não encontrado");
         }
 
+        // Após o pagamento ser criado, crie a order no banco
         const newOrder = await db.order.create({
             data: {
                 userId: data.userId,
                 ticketId: data.ticketId,
                 status: "PENDING",
                 payment: "PIX",
-                paymentId: data.paymentId,
+                paymentId: result.id, // Usando o paymentId retornado do Mercado Pago
             },
         });
 
-        return NextResponse.json(newOrder, { status: 201 });
+        return new Response(
+            JSON.stringify({
+                pix_code: qrCode ?? null,
+                order: newOrder,
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } }
+        );
     } catch (error) {
-        console.error("Erro ao criar o pedido:", error);
-        return NextResponse.json(
-            { message: "Falha ao criar o pedido" },
-            { status: 500 }
+        console.error("Erro Mercado Pago:", error);
+        return new Response(
+            JSON.stringify({ error: "Erro ao criar pagamento" }),
+            { status: 500, headers: { "Content-Type": "application/json" } }
         );
     }
 }
