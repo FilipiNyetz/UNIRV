@@ -61,7 +61,7 @@ export async function POST(req: Request) {
                 ticketId: data.ticketId,
                 status: "PENDING",
                 payment: "PIX",
-                paymentId: result.id, // Usando o paymentId retornado do Mercado Pago
+                paymentId: result.id.toString(), // Usando o paymentId retornado do Mercado Pago
             },
         });
 
