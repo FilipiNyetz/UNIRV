@@ -26,11 +26,10 @@ export async function POST(req: NextRequest) {
         }
 
         console.log('🔔 Notificação recebida do Mercado Pago:', body);
-        
+
         const paymentId = body?.data?.id;
 
         if (!paymentId) {
-            console.warn('⚠️ ID de pagamento ausente na notificação');
             return NextResponse.json({ error: 'ID de pagamento não encontrado' }, { status: 400 });
         }
 
@@ -56,7 +55,7 @@ export async function POST(req: NextRequest) {
             });
         } else if (status === 'cancelled') {
             console.log(`ℹ️ Status do pagamento ${paymentId}: ${status}`);
-                
+
             // Atualiza a order com o STATUS CANCELED
             await db.order.update({
                 where: { id: order.id },
