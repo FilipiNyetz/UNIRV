@@ -55,14 +55,14 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
             });
             setQrCode(response.data);
 
-            // 2. Criar a Order
-            await api.post('/orders', {
-                data: {
-                    userId: user?.id,
-                    ticketId: event?.Batch[0]?.Tickets[0]?.id,
-                    paymentId
-                }
-            })
+            // // 2. Criar a Order
+            // await api.post('/orders', {
+            //     data: {
+            //         userId: user?.id,
+            //         ticketId: event?.Batch[0]?.Tickets[0]?.id,
+            //         paymentId
+            //     }
+            // })
 
             // 3. Atualizar o availableTickets no Batch
             if (event?.Batch?.[0]) {
