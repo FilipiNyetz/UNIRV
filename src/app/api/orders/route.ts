@@ -31,17 +31,17 @@ export async function POST(request: Request) {
             );
         }
 
-        const newOrder = await db.order.create({
-            data: {
-                userId: data.userId,
-                ticketId: data.ticketId,
-                status: "PENDING",
-                payment: "PIX",
-                paymentId: data.paymentId,
-            },
-        });
+        // const newOrder = await db.order.create({
+        //     data: {
+        //         userId: data.userId,
+        //         ticketId: data.ticketId,
+        //         status: "PENDING",
+        //         payment: "PIX",
+        //         paymentId: data.paymentId,
+        //     },
+        // });
 
-        return NextResponse.json(newOrder, { status: 201 });
+        // return NextResponse.json(newOrder, { status: 201 });
     } catch (error) {
         console.error("Erro ao criar o pedido:", error);
         return NextResponse.json(
