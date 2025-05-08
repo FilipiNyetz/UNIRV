@@ -34,7 +34,7 @@ export async function POST(req: Request) {
                     number: data.payer.identification.number,
                 },
             },
-            notification_url: `https://unirv-app.qtcojd.easypanel.host/api/mercadopago/webhook`,
+            notification_url: `https://t3famel.vercel.app/api/mercadopago/webhook`,
             date_of_expiration: expirationDate,
         };
 

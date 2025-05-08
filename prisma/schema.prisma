@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,12 +12,12 @@ model User {
   name      String
   email     String   @unique
   phone     String
-  cpf       String   @unique
   studentId String?  @unique
   password  String
-  role      Int      @default(0) // 0 = user, 1 = admin
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  cpf       String   @unique
+  role      Int      @default(0)
   Order     Order[]
 }
 
@@ -36,21 +30,19 @@ model Event {
   image       String?
   link        String?
   active      Boolean
-
-  Batch Batch[]
+  Batch       Batch[]
 }
 
 model Batch {
   id               String   @id @default(cuid())
-  eventId          String?
   name             String
   availableTickets Int
   active           Boolean
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-
-  Event   Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  Tickets Ticket[]
+  eventId          String?
+  Event            Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  Tickets          Ticket[]
 }
 
 model Ticket {
@@ -61,23 +53,22 @@ model Ticket {
   active         Boolean
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-
-  Batch Batch?  @relation(fields: [batchId], references: [id], onDelete: Cascade)
-  Order Order[]
+  Order          Order[]
+  Batch          Batch?   @relation(fields: [batchId], references: [id], onDelete: Cascade)
 }
 
 model Order {
   id        String      @id @default(cuid())
   userId    String
-  user      User        @relation(fields: [userId], references: [id])
-  batchId   String
   ticketId  String
-  ticket    Ticket      @relation(fields: [ticketId], references: [id])
   status    OrderStatus
   payment   PaymentType
-  paymentId String      @unique
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  paymentId String      @unique
+  batchId   String
+  ticket    Ticket      @relation(fields: [ticketId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
 }
 
 enum PaymentType {
