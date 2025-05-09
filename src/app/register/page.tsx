@@ -12,6 +12,7 @@ import registerAction from "@/actions/register";
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import MaskedInput from "@/components/MaskedInput"
 
 const isValidCPF = (cpf: string) => {
     cpf = cpf.replace(/[^\d]+/g, '');
@@ -45,37 +46,62 @@ const RegisterPage = () => {
     const formSchema = z.object({
         name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
         cpf: z.string().nonempty("CPF é obrigatório")
-            .refine((val) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(val), {
-                message: "CPF deve estar no formato 000.000.000-00",
-            })
-            .refine((val) => isValidCPF(val), {
-                message: "CPF inválido",
-            }),
+          .refine((val) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(val), {
+            message: "CPF deve estar no formato 000.000.000-00",
+          })
+          .refine((val) => isValidCPF(val), {
+            message: "CPF inválido",
+          }),
         phone: z.string()
-            .regex(/^\d{11}$/, "Celular deve conter 11 números (com DDD)"),
-        studentId: z.string().superRefine((val, ctx) => {
+          .min(1, "Telefone é obrigatório")
+          .refine((val) => {
+            const digits = val.replace(/\D/g, '');
+            return digits.length === 10 || digits.length === 11;
+          }, {
+            message: "Telefone deve conter 10 ou 11 dígitos (com DDD)"
+          }),
+          studentId: z.string()
+          .superRefine((val, ctx) => {
             if (!noStudentId && val.length === 0) {
-                ctx.addIssue({
+              ctx.addIssue({
                 code: z.ZodIssueCode.too_small,
                 minimum: 1,
                 type: "string",
                 inclusive: true,
                 message: "Digite sua matrícula",
-                });
+              });
             }
-        }),
+            // Verifica o formato apenas se houver valor
+            if (val.length > 0) {
+              const matriculaRegex = /^\d{3}[A-Za-z]{3}\d{3}$/;
+              if (!matriculaRegex.test(val)) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: "Matrícula no formato inválido",
+                });
+              }
+              // Opcional: verificar se as letras são maiúsculas
+              // Se quiser forçar letras maiúsculas
+              if (val.substring(3, 6) !== val.substring(3, 6).toUpperCase()) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: "Matrícula no formato inválido",
+                });
+              }
+            }
+          }),
         email: z.string()
-            .min(1, "O e-mail é obrigatório")
-            .email("Formato de e-mail inválido"),
+          .min(1, "O e-mail é obrigatório")
+          .email("Formato de e-mail inválido"),
         password: z.string()
-            .min(6, "A senha deve ter no mínimo 6 caracteres")
-            .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")
-            .regex(/[a-z]/, "Deve conter pelo menos uma letra minúscula")
-            .regex(/[0-9]/, "Deve conter pelo menos um número"),
+          .min(6, "A senha deve ter no mínimo 6 caracteres")
+          .regex(/[A-Z]/, "Deve conter pelo menos uma letra maiúscula")
+          .regex(/[a-z]/, "Deve conter pelo menos uma letra minúscula")
+          .regex(/[0-9]/, "Deve conter pelo menos um número"),
         confirmPassword: z.string(),
     }).refine((data) => data.password === data.confirmPassword, {
-        message: "As senhas não coincidem",
-        path: ["confirmPassword"],
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
     });
       
     const form = useForm<z.infer<typeof formSchema>>({
@@ -146,12 +172,34 @@ const RegisterPage = () => {
                     </div>
                     <div className="flex flex-col gap-2">
                         <label>CPF</label>
-                        <Input placeholder="Informe seu CPF"  {...form.register("cpf")} className="h-12" />
+                        <MaskedInput
+                            maskType="cpf"
+                            placeholder="Informe seu CPF"
+                            className="h-12"
+                            {...form.register('cpf', { 
+                                required: 'CPF é obrigatório',
+                                pattern: {
+                                value: /^\d{3}\.\d{3}\.\d{3}-\d{2}$/,
+                                message: 'CPF inválido'
+                                }
+                            })}
+                        />
                         {errors.cpf && <p className="text-red-500 text-sm">{errors.cpf.message}</p>}
                     </div>
                     <div className="flex flex-col gap-2">
                         <label>Telefone</label>
-                        <Input placeholder="Informe seu telefone"  {...form.register("phone")} className="h-12" />
+                        <MaskedInput
+                            maskType="phone"
+                            placeholder="Informe seu telefone"
+                            className="h-12"
+                            {...form.register('phone', {
+                                required: 'Telefone é obrigatório',
+                                pattern: {
+                                value: /^\(\d{2}\) \d{4,5}-\d{4}$/,
+                                message: 'Telefone inválido'
+                                }
+                            })}
+                        />
                         {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
                     </div>
                     <div className="flex flex-col gap-2">
