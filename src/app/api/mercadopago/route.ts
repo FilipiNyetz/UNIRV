@@ -1,4 +1,3 @@
-// src/app/api/mercadopago/route.ts
 import { db } from "@/lib/prisma";
 import { MercadoPagoConfig, Payment } from "mercadopago";
 import { metadata } from "@/app/layout";
@@ -11,13 +10,18 @@ const client = new MercadoPagoConfig({
 const payment = new Payment(client);
 
 function generateIdempotencyKey() {
-    return 'key-' + Math.random().toString(36).substring(2, 15)
-        + Math.random().toString(36).substring(2, 15);
+    return (
+        "key-" +
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15)
+    );
 }
 
-// 👇 Aqui está a exportação correta para um handler POST
+const expirationDate = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+
 export async function POST(req: Request) {
     const { data } = await req.json();
+
     try {
         const order = await db.order.create({ 
             data:{
@@ -38,24 +42,48 @@ export async function POST(req: Request) {
                 identification: {
                     type: "CPF",
                     number: data.payer.identification.number,
-                }
+                },
             },
-            notification_url: 'https://unirv-app.qtcojd.easypanel.host/api/mercadopago/webhook',
-            metadata: {
-                orderId: order.id,
-            },
+            notification_url: `https://t3famel.vercel.app/api/mercadopago/webhook`,
+            date_of_expiration: expirationDate,
         };
 
         const requestOptions = {
             idempotencyKey: generateIdempotencyKey(),
         };
 
+        // Cria o pagamento via Mercado Pago
         const result = await payment.create({ body, requestOptions });
+
+        if (!result.id) {
+            throw new Error("Payment ID não encontrado");
+        }
+        console.log("Criando order com:", {
+            userId: data.userId,
+            batchId: data.batchId,
+            ticketId: data.ticketId,
+            paymentId: result.id.toString(),
+        });
+        // Após o pagamento ser criado, crie a order no banco
+        const newOrder = await db.order.create({
+            data: {
+                userId: data.userId,
+                batchId: data.batchId,
+                ticketId: data.ticketId,
+                status: "PENDING",
+                payment: "PIX",
+                paymentId: result.id.toString(), // Aqui usamos o paymentId real
+            },
+        });
 
         const qrCode = result.point_of_interaction?.transaction_data?.qr_code;
 
         return new Response(
-            JSON.stringify({ pix_code: qrCode ?? null }),
+            JSON.stringify({
+                pix_code: qrCode ?? null,
+                order: newOrder,
+                paymentId: result.id,
+            }),
             { status: 200, headers: { "Content-Type": "application/json" } }
         );
     } catch (error) {

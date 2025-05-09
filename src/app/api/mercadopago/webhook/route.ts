@@ -15,12 +15,9 @@ const payment = new Payment(client);
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-
-        console.log('🔔 Notificação recebida do Mercado Pago:', body);
-
         const paymentId = body?.data?.id;
+
         if (!paymentId) {
-            console.warn('⚠️ ID de pagamento ausente na notificação');
             return NextResponse.json({ error: 'ID de pagamento não encontrado' }, { status: 400 });
         }
 
@@ -28,31 +25,20 @@ export async function POST(req: NextRequest) {
         const paymentData = await payment.get({ id: paymentId });
         const status = paymentData.status;
         const email = paymentData.payer?.email;
-        const orderId = paymentData.metadata?.orderId;
 
-        if (!orderId) {
-            console.warn("OrderId não encontrado nos metadados do pagamento.");
-            return NextResponse.json({ error: "OrderId não encontrado" }, { status: 400 });
-        }
+        // Atualiza a order com o novo status
+        const order = await db.order.update({
+            where: { paymentId: paymentId.toString() },
+            data: {
+                status: status === "approved"
+                    ? "COMPLETED"
+                    : status === "cancelled"
+                        ? "CANCELED"
+                        : "PENDING"
+            },
+        });
 
-        // Aqui você pode salvar ou atualizar dados no seu banco de dados
-        if (status === 'approved') {
-            await db.order.update({
-                where: { id: orderId },
-                data: { status: "COMPLETED" },
-            });
-            console.log(`✅ Pagamento aprovado para ${email} (ID: ${paymentId})`);
-        } 
-        else if (status === 'cancelled') {
-            await db.order.update({
-                where: { id: orderId },
-                data: { status: "CANCELED" },
-            });
-            console.log(`❌ Pagamento cancelado para ${email} (ID: ${paymentId})`);
-        }
-        else {
-            console.log(`ℹ️ Status do pagamento ${paymentId}: ${status}`);
-        }
+        console.log(`✅ Webhook processado para ${email} com status ${status}`);
 
         return NextResponse.json({ success: true });
     } catch (error) {
@@ -60,6 +46,7 @@ export async function POST(req: NextRequest) {
         return new NextResponse('Erro interno no servidor', { status: 500 });
     }
 }
+
 
 // Rejeita outros métodos HTTP
 export function GET() {

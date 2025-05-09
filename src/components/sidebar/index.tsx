@@ -1,23 +1,25 @@
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { Button } from '../ui/button';
-import { Home, MenuIcon, User } from 'lucide-react';
+import { Home, MenuIcon, User, ClipboardList, LogOut } from 'lucide-react';
 import { SiInstagram, SiWhatsapp } from 'react-icons/si';
 import { auth } from '../../../auth';
+import logoutAction from '@/actions/signout';
 
 export async function Sidebar() {
 
   const session = await auth();
+  const isAdmin = session?.user?.role === 1;
 
   return (
     <div className="w-full bg-muted/40">
       {/* MOBILE: Sheet menu */}
       <div className="sm:hidden w-full">
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-end px-4 border-b bg-background">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-end px-4 border-b bg-primary">
           <Sheet>
             <SheetTrigger asChild>
-              <Button size="icon" variant="outline">
-                <MenuIcon className="w-5 h-5" />
+              <Button size="icon" variant="outline" className='bg-dark-gray border-none'>
+                <MenuIcon className="w-5 h-5 text-white" />
                 <span className="sr-only">Abrir/Fechar menu</span>
               </Button>
             </SheetTrigger>
@@ -28,6 +30,13 @@ export async function Sidebar() {
                   <Home className="h-5 w-5" />
                   Início
                 </Link>
+                {isAdmin &&
+                  <Link href="/sales" className="flex items-center gap-4 px-2.5 text-black">
+                    <ClipboardList className="h-5 w-5" />
+                    Vendas
+                  </Link>
+                }
+                
                 <Link href="/perfil" className="flex items-center gap-4 px-2.5 text-black">
                   <User className="h-5 w-5" />
                   {!session ? 
@@ -50,6 +59,12 @@ export async function Sidebar() {
                   <SiWhatsapp className="h-5 w-5" />
                   Whatsapp
                 </Link>
+                {session && (
+                  <Button onClick={logoutAction} className='max-w-24 flex gap-4 text-black text-lg hover:bg-primary hover:text-black shadow-none'>
+                    <LogOut className='h5 w-5' />
+                    Sair
+                  </Button>
+                )}
               </nav>
             </SheetContent>
           </Sheet>
@@ -64,6 +79,12 @@ export async function Sidebar() {
             <Home className="h-4 w-4" />
             Início
           </Link>
+          {isAdmin &&
+            <Link href="/sales" className="flex items-center gap-2 px-2.5 text-black">
+              <ClipboardList className="h-5 w-5" />
+              Vendas
+            </Link>
+          }
           <Link
             href="https://www.instagram.com/medfamelt3/"
             target="_blank"
@@ -82,7 +103,14 @@ export async function Sidebar() {
           </Link>
         </div>
 
-        <div>
+        <div className='flex gap-6'>
+          {session && (
+            <Button onClick={logoutAction} className='flex items-center gap-2 text-sm font-medium transition hover:bg-primary hover:text-black shadow-none'>
+              <LogOut className='h4 w-4' />
+              Sair
+            </Button>
+          )}
+      
           <Link
             href="/perfil"
             className="flex items-center gap-2 text-sm font-medium hover:text-black transition"
