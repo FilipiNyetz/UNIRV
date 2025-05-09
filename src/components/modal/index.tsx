@@ -70,7 +70,7 @@ export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess 
           setQrCode(response.data);
       
           // Iniciar o contador regressivo
-          setTimeLeft(1 * 60); // Reset para 30 minutos
+          setTimeLeft(30 * 60); // Reset para 30 minutos
           
           timerRef.current = setInterval(() => {
             setTimeLeft(prevTime => {
