@@ -43,6 +43,7 @@ model Batch {
   eventId          String?
   Event            Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   Tickets          Ticket[]
+  Order            Order[]
 }
 
 model Ticket {
@@ -69,6 +70,7 @@ model Order {
   batchId   String
   ticket    Ticket      @relation(fields: [ticketId], references: [id])
   user      User        @relation(fields: [userId], references: [id])
+  batch     Batch       @relation(fields: [batchId], references: [id])
 }
 
 enum PaymentType {
