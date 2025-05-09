@@ -1,5 +1,4 @@
 import { Ingresso } from "@/components/ingresso";
-import { Card, CardContent } from "@/components/ui/card";
 import { auth } from "../../../auth";
 import { redirect } from "next/navigation";
 

@@ -10,6 +10,7 @@ import { api } from '../../service/api';
 import { Batch, Event, Ticket } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import SkeletonCard from '@/components/SkeletonCard';
+import { MapPin } from 'lucide-react';
 
 declare module 'next-auth' {
   interface User {
@@ -54,10 +55,10 @@ export default function Home() {
 
 
   return (
-    <main className="h-auto px-4 py-8 flex flex-col items-center">
+    <main className="h-auto w-full px-4 py-8 flex flex-col items-center">
       <div className="flex flex-col max-w-md w-full text-center mb-2 items-center">
         <Image src="/Brasao.png" alt="Brasao da turma" width={80} height={80} />
-        <h2 className="text-xl font-semibold text-zinc-800">
+        <h2 className="text-2xl font-semibold text-zinc-800">
           Seja bem-vindo ao portal da <span className="text-primary-darker font-bold">T3</span>
         </h2>
       </div>
@@ -68,23 +69,39 @@ export default function Home() {
       {eventsData?.filter((event: EventWithBatchsAndTickets) => event.active).map((event: EventWithBatchsAndTickets) => {
         const formattedDate = new Date(event.date).toLocaleDateString('pt-BR')
         return (
-          <div className="w-full max-w-md flex flex-col gap-2" key={event.id}>
-            <p>Garanta seu ingresso para o <span className="text-primary-darker">{event.name}</span>!</p>
-            <div className="w-full h-50 bg-gray-600 mb-2"></div>
-            <div className="flex w-full items-center justify-center flex-col">
-              <h3 className="text-m">{formattedDate}</h3>
+          <div className="w-full max-w-lg flex flex-col gap-4 items-center" key={event.id}>
+            <p className='text-xl'>Garanta seu ingresso para o <span className="text-primary-darker">{event.name}</span>!</p>
+            <div className="w-96 h-50 bg-gray-600 mb-2">
+              <Image 
+                src={event.image} 
+                alt={`Imagem do evento ${event.name}`} 
+                width={384}  // ou o valor que corresponda ao tamanho do card
+                height={200} 
+                className="object-cover w-full h-48 rounded"
+              />
+            </div>
+            <div className="flex w-full mb-4 items-center gap-2 justify-center">
+              <h3 className='text-md'>{event.date}</h3>
+
+              <div className="border-l border-dark-gray w-px h-full text-antiflash-white">.</div>
+
+              <div className="text-md">Às {event.time}h</div>
+
+              <div className="border-l border-dark-gray w-px h-full text-antiflash-white">.</div>
+
+              <div className="flex gap-1 items-center">
+                <MapPin size={18} />
+                <h3 className='text-md'>{event.location}</h3>
+              </div>
             </div>
 
             {event.Batch.map((batch) => 
-              <div className={`mt-2 w-full max-w-md`}>
+              <div className={`mt-4 w-96 max-w-md`} key={batch.id}>
                 <Card variant={`${!batch.active ? "disabled" : "default"}`}>
                   <CardContent className="flex flex-col gap-4">
-                    <h2 className="text-xl text-left flex pl-4 pr-2 items-center justify-between">
+                    <h2 className="text-2xl justify-center flex px-4 items-center justify-between">
                       <span className="text-primary-darker font-semibold">
                         {batch?.name} 
-                      </span>
-                      <span className='text-sm'>
-                        (Restam {batch?.availableTickets} ingressos)
                       </span>
                     </h2>
 

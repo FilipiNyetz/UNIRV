@@ -24,10 +24,11 @@ model User {
 model Event {
   id          String   @id @default(cuid())
   name        String
-  date        DateTime
-  location    String?
+  date        String
+  time        String
+  location    String
   description String?
-  image       String?
+  image       String
   link        String?
   active      Boolean
   Batch       Batch[]

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Copy, Map, MapPin, X } from "lucide-react";
 import Link from "next/link";
@@ -29,60 +29,84 @@ type ModalProps = {
 export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: ModalProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [qrCode, setQrCode] = useState<{ pix_code: string } | null>(null);
+    const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutos em segundos
+    const timerRef = useRef(null);
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
 
     const getQRCode = async () => {
         const paymentId = Math.random().toString(36).substr(2, 9);
         setIsLoading(true);
-        try {
-            // 1. Criar o QR Code no Mercado Pago
-            const response = await api.post('/mercadopago', {
-                data: {
-                    description: `Ingresso para o evento ${event?.name}`,
-                    amount: isAluno ? event?.Batch[0]?.Tickets[0]?.student_price : event?.Batch[0]?.Tickets[0]?.external_price,
-                    paymentId: paymentId,
-                    payer: {
-                        email: user?.email,
-                        first_name: user?.name,
-                        identification: {
-                            type: "CPF",
-                            number: user?.cpf
-                        }
-                    },
-                    userId: user?.id,  // Enviando o userId do usuário logado
-                    batchId: event?.Batch[0].id,
-                    ticketId: event?.Batch[0]?.Tickets[0]?.id,
-
-                }
-            });
-            setQrCode(response.data);
-
-            // // 2. Criar a Order
-            // await api.post('/orders', {
-            //     data: {
-            //         userId: user?.id,
-            //         ticketId: event?.Batch[0]?.Tickets[0]?.id,
-            //         paymentId
-            //     }
-            // })
-
-            // 3. Atualizar o availableTickets no Batch
-            if (event?.Batch?.[0]) {
-                await api.patch(`/batchs?id=${event.Batch[0].id}`, {
-                    availableTickets: event.Batch[0].availableTickets - 1
-                });
-            } else {
-                console.error("Batch não encontrado ou evento inválido");
-            }
-
-
-            if (onSuccess) onSuccess();
-
-        } catch (error) {
-            console.error('Error fetching QR code:', error);
-        } finally {
-            setIsLoading(false);
+        
+        // Resetar qualquer timer existente
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
         }
-    }
+        
+        try {
+          // 1. Criar o QR Code no Mercado Pago
+          const response = await api.post('/mercadopago', {
+            data: {
+              description: `Ingresso para o evento ${event?.name}`,
+              amount: isAluno ? event?.Batch[0]?.Tickets[0]?.student_price : event?.Batch[0]?.Tickets[0]?.external_price,
+              paymentId: paymentId,
+              payer: {
+                email: user?.email,
+                first_name: user?.name,
+                identification: {
+                  type: "CPF",
+                  number: user?.cpf
+                }
+              },
+              userId: user?.id,
+              batchId: event?.Batch[0].id,
+              ticketId: event?.Batch[0]?.Tickets[0]?.id,
+            }
+          });
+          setQrCode(response.data);
+      
+          // Iniciar o contador regressivo
+          setTimeLeft(30 * 60); // Reset para 30 minutos
+          
+          timerRef.current = setInterval(() => {
+            setTimeLeft(prevTime => {
+              if (prevTime <= 1) {
+                clearInterval(timerRef.current);
+                // Aqui você pode adicionar lógica para cancelar o pedido automaticamente
+                return 0;
+              }
+              return prevTime - 1;
+            });
+          }, 1000);
+      
+          // 3. Atualizar o availableTickets no Batch
+          if (event?.Batch?.[0]) {
+            await api.patch(`/batchs?id=${event.Batch[0].id}`, {
+              availableTickets: event.Batch[0].availableTickets - 1
+            });
+          }
+      
+          if (onSuccess) onSuccess();
+      
+        } catch (error) {
+          console.error('Error fetching QR code:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      // Limpar o intervalo quando o componente for desmontado
+    useEffect(() => {
+        return () => {
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+        }
+        };
+    }, []);
 
 
     const copyToClipboard = async () => {
@@ -108,6 +132,15 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
                     <DialogTitle className="text-xl font-semibold mb-1">
                         Pagamento do Ingresso
                     </DialogTitle>
+
+                    {timeLeft > 0 && qrCode && (
+                        <div className="countdown-timer">
+                            <p>Tempo restante para pagamento: <span>{formatTime(timeLeft)}</span></p>
+                            {timeLeft < 60 && (
+                            <p style={{color: 'red'}}>Seu pedido será cancelado em breve!</p>
+                            )}
+                        </div>
+                    )}
 
                     <div className="text-primary font-semibold text-lg">
                         {event?.name} <span className="text-primary-darker">
