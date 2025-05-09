@@ -9,7 +9,7 @@ export default async function loginAction(_prevstate: any, formData: FormData) {
             email: formData.get("email") as string,
             password: formData.get("password") as string,
             redirect: true,
-            redirectTo: "/perfil"
+            redirectTo: "/"
         })
     } catch (error: any) {
         if (isRedirectError(error)) {

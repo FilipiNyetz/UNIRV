@@ -31,6 +31,7 @@ export default function Home() {
     required: false
   });
   const [eventsData, setEventsData] = useState<EventWithBatchsAndTickets[]>([]);
+  const [selectedBatch, setSelectedBatch] = useState<Batch & { Tickets: Ticket[] } | null>(null);
 
   useEffect(() => {
     update()
@@ -41,17 +42,32 @@ export default function Home() {
     return !!userSession?.user?.studentId;
   }, [status, userSession?.user?.studentId]);
 
-  const getEvents = async () => {
-    setIsLoading(true);
-    api.get("/events").then((response) => {
-      setEventsData(response.data)
-      setIsLoading(false);
-    })
+  // Modifique a função getEvents para ordenar os lotes
+const getEvents = async () => {
+  setIsLoading(true);
+  try {
+    const response = await api.get("/events");
+    // Ordenar os lotes de cada evento por ID (ou por outra propriedade como 'createdAt')
+    const eventsWithSortedBatches = response.data.map((event: EventWithBatchsAndTickets) => ({
+      ...event,
+      Batch: [...event.Batch].sort((a, b) => a.id - b.id), // Ordenação por ID
+    }));
+    setEventsData(eventsWithSortedBatches);
+  } catch (error) {
+    console.error("Error fetching events:", error);
+  } finally {
+    setIsLoading(false);
   }
+};
 
   useEffect(() => {
     getEvents()
   }, [])
+
+  const openModalWithBatch = (batch: Batch & { Tickets: Ticket[] }) => {
+    setSelectedBatch(batch);
+    setIsOpen(true);
+  };
 
 
   return (
@@ -118,7 +134,7 @@ export default function Home() {
                         </h1>
                         <Button
                           disabled={!isAluno || !userSession}
-                          onClick={() => setIsOpen(true)}
+                          onClick={() => openModalWithBatch(batch)}
                         >
                           COMPRAR
                         </Button>
@@ -136,7 +152,7 @@ export default function Home() {
                         </h1>
                         <Button
                           disabled={isAluno || !userSession}
-                          onClick={() => setIsOpen(true)}
+                          onClick={() => openModalWithBatch(batch)}
                         >
                           COMPRAR
                         </Button>
@@ -148,12 +164,16 @@ export default function Home() {
             )}
 
             <Modal 
-            isOpen={isOpen} 
-            onClose={() => setIsOpen(false)} 
-            event={event} 
-            isAluno={isAluno} 
-            user={userSession?.user} 
-            onSuccess={getEvents}
+              isOpen={isOpen} 
+              onClose={() => {
+                setIsOpen(false);
+                setSelectedBatch(null);
+              }} 
+              event={event} 
+              batch={selectedBatch} // Adicione esta prop
+              isAluno={isAluno} 
+              user={userSession?.user} 
+              onSuccess={getEvents}
             />
           </div>
         )
