@@ -31,10 +31,18 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
     try {
         const url = new URL(request.url);
-        const id = url.searchParams.get("id");
-        if (!id) {
+        const idParam = url.searchParams.get("id");
+        if (!idParam) {
             return NextResponse.json(
                 { message: "ID do lote é obrigatório" },
+                { status: 400 }
+            );
+        }
+
+        const id = parseInt(idParam);
+        if (isNaN(id)) {
+            return NextResponse.json(
+                { message: "ID inválido" },
                 { status: 400 }
             );
         }

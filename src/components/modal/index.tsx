@@ -26,13 +26,13 @@ type ModalProps = {
 };
 
 
-export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: ModalProps) {
+export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess }: ModalProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [qrCode, setQrCode] = useState<{ pix_code: string } | null>(null);
     const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutos em segundos
     const timerRef = useRef(null);
 
-    const formatTime = (seconds) => {
+    const formatTime = (seconds : number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -52,7 +52,7 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
           const response = await api.post('/mercadopago', {
             data: {
               description: `Ingresso para o evento ${event?.name}`,
-              amount: isAluno ? event?.Batch[0]?.Tickets[0]?.student_price : event?.Batch[0]?.Tickets[0]?.external_price,
+              amount: isAluno ? batch?.Tickets[0]?.student_price : batch?.Tickets[0]?.external_price,
               paymentId: paymentId,
               payer: {
                 email: user?.email,
@@ -76,6 +76,7 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
             setTimeLeft(prevTime => {
               if (prevTime <= 1) {
                 clearInterval(timerRef.current);
+                onClose()
                 // Aqui você pode adicionar lógica para cancelar o pedido automaticamente
                 return 0;
               }
@@ -144,10 +145,10 @@ export function Modal({ isOpen, onClose, event, isAluno, user, onSuccess }: Moda
 
                     <div className="text-primary font-semibold text-lg">
                         {event?.name} <span className="text-primary-darker">
-                            {isAluno ? event?.Batch[0]?.Tickets[0]?.student_price.toLocaleString('pt-BR', {
+                            {isAluno ? batch?.Tickets[0]?.student_price.toLocaleString('pt-BR', {
                                 style: 'currency',
                                 currency: 'BRL',
-                            }) : event?.Batch[0]?.Tickets[0]?.external_price.toLocaleString('pt-BR', {
+                            }) : batch?.Tickets[0]?.external_price.toLocaleString('pt-BR', {
                                 style: 'currency',
                                 currency: 'BRL',
                             })}

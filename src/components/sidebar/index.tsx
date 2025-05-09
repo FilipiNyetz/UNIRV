@@ -104,23 +104,21 @@ export async function Sidebar() {
         </div>
 
         <div className='flex gap-6'>
-          {session && (
+          {session ? (
             <Button onClick={logoutAction} className='flex items-center gap-2 text-sm font-medium transition hover:bg-primary hover:text-black shadow-none'>
               <LogOut className='h4 w-4' />
               Sair
             </Button>
-          )}
-      
-          <Link
-            href="/perfil"
+          ) : (
+            <Link
+            href="/login"
             className="flex items-center gap-2 text-sm font-medium hover:text-black transition"
           >
             <User className="h-4 w-4" />
-            {!session ? 
-              "Entrar"
-            : "Meu Perfil"
-            }
+            Entrar
           </Link>
+          )}
+      
         </div>
       </nav>
     </div>
