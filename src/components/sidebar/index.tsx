@@ -36,13 +36,22 @@ export async function Sidebar() {
                     Vendas
                   </Link>
                 }
-                
-                <Link href="/perfil" className="flex items-center gap-4 px-2.5 text-black">
-                  <User className="h-5 w-5" />
-                  {!session ? 
-                    "Entrar"
-                  : "Meu Perfil"}
-                </Link>
+             
+                {session ? (
+                  <Button onClick={logoutAction} className='max-w-24 flex gap-4 text-black text-lg hover:bg-primary hover:text-black shadow-none'>
+                    <LogOut className='h5 w-5' />
+                    Sair
+                  </Button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex items-center gap-4 px-2.5 hover:text-black transition"
+                  >
+                    <User className="h-5 w-5" />
+                    Entrar
+                  </Link>
+                )}
+
                 <Link
                   href="https://www.instagram.com/medfamelt3/"
                   target="_blank"
@@ -59,12 +68,6 @@ export async function Sidebar() {
                   <SiWhatsapp className="h-5 w-5" />
                   Whatsapp
                 </Link>
-                {session && (
-                  <Button onClick={logoutAction} className='max-w-24 flex gap-4 text-black text-lg hover:bg-primary hover:text-black shadow-none'>
-                    <LogOut className='h5 w-5' />
-                    Sair
-                  </Button>
-                )}
               </nav>
             </SheetContent>
           </Sheet>
@@ -111,12 +114,12 @@ export async function Sidebar() {
             </Button>
           ) : (
             <Link
-            href="/login"
-            className="flex items-center gap-2 text-sm font-medium hover:text-black transition"
-          >
-            <User className="h-4 w-4" />
-            Entrar
-          </Link>
+              href="/login"
+              className="flex items-center gap-2 text-sm font-medium hover:text-black transition"
+            >
+              <User className="h-4 w-4" />
+              Entrar
+            </Link>
           )}
       
         </div>

@@ -20,7 +20,8 @@ export default async function registerAction(_: any, formData: FormData) {
     where: {
       OR: [
         { email },
-        { cpf }
+        { cpf },
+        { studentId },
       ]
     }
   })
@@ -31,6 +32,9 @@ export default async function registerAction(_: any, formData: FormData) {
     }
     if (existingUser.cpf === cpf) {
       return { error: "Este CPF já está cadastrado." }
+    }
+    if (existingUser.studentId === studentId) {
+      return { error: "Esta matrícula já está cadastrada." }
     }
   }
 

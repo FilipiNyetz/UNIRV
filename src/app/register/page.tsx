@@ -60,7 +60,7 @@ const RegisterPage = () => {
           }, {
             message: "Telefone deve conter 10 ou 11 dígitos (com DDD)"
           }),
-          studentId: z.string()
+        studentId: z.string()
           .superRefine((val, ctx) => {
             if (!noStudentId && val.length === 0) {
               ctx.addIssue({
@@ -70,19 +70,34 @@ const RegisterPage = () => {
                 inclusive: true,
                 message: "Digite sua matrícula",
               });
+              return;
             }
-            // Verifica o formato apenas se houver valor
+            
             if (val.length > 0) {
-              const matriculaRegex = /^\d{3}[A-Za-z]{3}\d{3}$/;
+              // Verifica o formato completo
+              const matriculaRegex = /^\d{5}[A-Za-z]{3}\d{3}$/;
               if (!matriculaRegex.test(val)) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   message: "Matrícula no formato inválido",
                 });
+                return;
               }
-              // Opcional: verificar se as letras são maiúsculas
-              // Se quiser forçar letras maiúsculas
-              if (val.substring(3, 6) !== val.substring(3, 6).toUpperCase()) {
+              
+              // Verifica as letras maiúsculas
+              if (val.substring(5, 8) !== val.substring(5, 8).toUpperCase()) {
+                ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: "Matrícula no formato inválido",
+                });
+                return;
+              }
+              
+              // Verifica os dois primeiros dígitos (ano)
+              const currentYear = new Date().getFullYear() % 100; // Pega os últimos 2 dígitos do ano atual
+              const yearPart = parseInt(val.substring(0, 2));
+              
+              if (yearPart < 19 || yearPart > currentYear) {
                 ctx.addIssue({
                   code: z.ZodIssueCode.custom,
                   message: "Matrícula no formato inválido",
