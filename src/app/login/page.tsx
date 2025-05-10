@@ -87,8 +87,8 @@ const LoginPage = () => {
                     <Input placeholder="Digite sua senha" {...form.register("password")} className="h-12"/>
                     {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                 </div> 
-                    <Link href={"#"} className="text-right underline hover:scale-103 hover:text-gray-700 transition duration-250">Esqueceu a senha?</Link>
-                    <Button type="submit" className="w-full h-12" disabled={isLoading}>
+                    {/* <Link href={"#"} className="text-right underline hover:scale-103 hover:text-gray-700 transition duration-250">Esqueceu a senha?</Link> */}
+                    <Button type="submit" className="w-full h-12 mt-7" disabled={isLoading}>
                         {isLoading && <Loader2 className="animate-spin" />}
                         Entrar
                     </Button>

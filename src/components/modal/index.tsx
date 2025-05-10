@@ -160,12 +160,12 @@ export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess 
                             <div className="text-xl font-bold mt-2">30</div>
                             <div className="text-sm text-gray-600 mb-2">Sex</div>
                             <div className="bg-black text-primary w-full py-1 text-sm font-semibold">
-                                Abr.
+                                Mai.
                             </div>
                         </div>
 
                         <div className="flex flex-col items-center">
-                            <div className="text-lg font-medium">Às 20:00h</div>
+                            <div className="text-lg font-medium">Às {event?.time}h</div>
                             <div className="text-sm flex items-center">
                                 <MapPin></MapPin> <Link href="#" className="underline hover:text-primary-darker transition">Localização</Link>
                             </div>
