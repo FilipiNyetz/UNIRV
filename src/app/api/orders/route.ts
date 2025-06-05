@@ -22,52 +22,47 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
-        const { data } = await request.json();
+        const { userId, ticketId, paymentId } = await request.json();
 
-        if (!data.userId || !data.ticketId) {
-            return NextResponse.json(
-                { message: "Dados incompletos para criar o pedido" },
-                { status: 400 }
-            );
+        if (!userId || !ticketId) {
+            return NextResponse.json({ message: "Dados incompletos para criar o pedido" }, { status: 400 });
         }
 
-        // Busca o ticket
+        // Busca o ticket para pegar o batchId
         const ticket = await db.ticket.findUnique({
-            where: { id: data.ticketId },
+            where: { id: ticketId },
+            select: { batchId: true }
         });
 
-        if (!ticket) {
-            return NextResponse.json(
-                { message: "Ingresso não encontrado" },
-                { status: 404 }
-            );
+        if (!ticket || !ticket.batchId) {
+            return NextResponse.json({ message: "Ticket ou lote inválido" }, { status: 400 });
         }
 
-        // Cria a order com os dados do ticket (incluindo o lote)
-        if (!ticket.batchId) {
-            return NextResponse.json(
-                { message: "O ingresso não está vinculado a um lote" },
-                { status: 400 }
-            );
-        }
+        // Cria o pedido usando o batchId do ticket
         const newOrder = await db.order.create({
             data: {
-                userId: data.userId,
-                ticketId: data.ticketId,
-                batchId: ticket.batchId, // <-- você traz explicitamente
+                userId,
+                ticketId,
+                batchId: ticket.batchId,
                 status: "PENDING",
                 payment: "PIX",
-                paymentId: data.paymentId,
+                paymentId,
             },
         });
 
-        return NextResponse.json(newOrder, { status: 201 });
+        // Atualiza o lote reduzindo a quantidade de ingressos disponíveis
+        await db.batch.update({
+            where: { id: ticket.batchId },
+            data: {
+                availableTickets: {
+                    decrement: 1
+                }
+            }
+        });
 
+        return NextResponse.json(newOrder, { status: 201 });
     } catch (error) {
         console.error("Erro ao criar o pedido:", error);
-        return NextResponse.json(
-            { message: "Falha ao criar o pedido" },
-            { status: 500 }
-        );
+        return NextResponse.json({ message: "Falha ao criar o pedido" }, { status: 500 });
     }
 }
