@@ -86,9 +86,9 @@ export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess 
             }, 1000);
 
             // 3. Atualizar o availableTickets no Batch
-            if (event?.Batch?.[0]) {
-                await api.patch(`/batchs?id=${event.Batch[0].id}`, {
-                    availableTickets: event.Batch[0].availableTickets - 1
+            if (batch) {
+                await api.patch(`/batchs?id=${batch.id}`, {
+                    availableTickets: batch.availableTickets - 1,
                 });
             }
 

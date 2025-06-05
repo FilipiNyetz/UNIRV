@@ -38,17 +38,17 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: "Ticket ou lote inválido" }, { status: 400 });
         }
 
-        // Cria o pedido usando o batchId do ticket
-        const newOrder = await db.order.create({
-            data: {
-                userId,
-                ticketId,
-                batchId: ticket.batchId,
-                status: "PENDING",
-                payment: "PIX",
-                paymentId,
-            },
-        });
+        // // Cria o pedido usando o batchId do ticket
+        // const newOrder = await db.order.create({
+        //     data: {
+        //         userId,
+        //         ticketId,
+        //         batchId: ticket.batchId,
+        //         status: "PENDING",
+        //         payment: "PIX",
+        //         paymentId,
+        //     },
+        // });
 
         // Atualiza o lote reduzindo a quantidade de ingressos disponíveis
         await db.batch.update({
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
             }
         });
 
-        return NextResponse.json(newOrder, { status: 201 });
+        // return NextResponse.json(newOrder, { status: 201 });
     } catch (error) {
         console.error("Erro ao criar o pedido:", error);
         return NextResponse.json({ message: "Falha ao criar o pedido" }, { status: 500 });
