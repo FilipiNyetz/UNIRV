@@ -63,9 +63,8 @@ export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess 
                         }
                     },
                     userId: user?.id,
-                    batchId: batch.id,
-                    ticketId: batch?.Tickets[0]?.id,
-
+                    batchId: event?.Batch[1].id,
+                    ticketId: event?.Batch[1]?.Tickets[0]?.id,
                 }
             });
             setQrCode(response.data);
