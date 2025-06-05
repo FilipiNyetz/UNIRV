@@ -22,6 +22,16 @@ export async function POST(req: Request) {
     const { data } = await req.json();
 
     try {
+        const ticket = await db.ticket.findUnique({
+            where: { id: data.ticketId },
+            select: { batchId: true },
+        });
+        if (!ticket || ticket.batchId === null) {
+            return new Response(
+                JSON.stringify({ error: "Ticket inválido ou sem batchId associado" }),
+                { status: 400, headers: { "Content-Type": "application/json" } }
+            );
+        }
         const body = {
             transaction_amount: data.amount,
             description: data.description,
@@ -58,11 +68,11 @@ export async function POST(req: Request) {
         const newOrder = await db.order.create({
             data: {
                 userId: data.userId,
-                batchId: data.batchId,
+                batchId: ticket.batchId,
                 ticketId: data.ticketId,
                 status: "PENDING",
                 payment: "PIX",
-                paymentId: result.id.toString(), // Aqui usamos o paymentId real
+                paymentId: result.id.toString(),
             },
         });
 
