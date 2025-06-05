@@ -68,7 +68,7 @@ export async function POST(req: Request) {
         const newOrder = await db.order.create({
             data: {
                 userId: data.userId,
-                batchId: ticket.batchId,
+                batchId: data.batchId,
                 ticketId: data.ticketId,
                 status: "PENDING",
                 payment: "PIX",
