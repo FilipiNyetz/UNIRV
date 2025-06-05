@@ -32,7 +32,7 @@ export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess 
     const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutos em segundos
     const timerRef = useRef(null);
 
-    const formatTime = (seconds : number) => {
+    const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -41,71 +41,72 @@ export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess 
     const getQRCode = async () => {
         const paymentId = Math.random().toString(36).substr(2, 9);
         setIsLoading(true);
-        
-        // Resetar qualquer timer existente
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-        }
-        
-        try {
-          // 1. Criar o QR Code no Mercado Pago
-          const response = await api.post('/mercadopago', {
-            data: {
-              description: `Ingresso para o evento ${event?.name}`,
-              amount: isAluno ? batch?.Tickets[0]?.student_price : batch?.Tickets[0]?.external_price,
-              paymentId: paymentId,
-              payer: {
-                email: user?.email,
-                first_name: user?.name,
-                identification: {
-                  type: "CPF",
-                  number: user?.cpf
-                }
-              },
-              userId: user?.id,
-              batchId: event?.Batch[0].id,
-              ticketId: event?.Batch[0]?.Tickets[0]?.id,
-            }
-          });
-          setQrCode(response.data);
-      
-          // Iniciar o contador regressivo
-          setTimeLeft(30 * 60); // Reset para 30 minutos
-          
-          timerRef.current = setInterval(() => {
-            setTimeLeft(prevTime => {
-              if (prevTime <= 1) {
-                clearInterval(timerRef.current);
-                onClose()
-                // Aqui você pode adicionar lógica para cancelar o pedido automaticamente
-                return 0;
-              }
-              return prevTime - 1;
-            });
-          }, 1000);
-      
-          // 3. Atualizar o availableTickets no Batch
-          if (event?.Batch?.[0]) {
-            await api.patch(`/batchs?id=${event.Batch[0].id}`, {
-              availableTickets: event.Batch[0].availableTickets - 1
-            });
-          }
-      
-          if (onSuccess) onSuccess();
-      
-        } catch (error) {
-          console.error('Error fetching QR code:', error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
 
-      // Limpar o intervalo quando o componente for desmontado
-    useEffect(() => {
-        return () => {
+        // Resetar qualquer timer existente
         if (timerRef.current) {
             clearInterval(timerRef.current);
         }
+
+        try {
+            // 1. Criar o QR Code no Mercado Pago
+            const response = await api.post('/mercadopago', {
+                data: {
+                    description: `Ingresso para o evento ${event?.name}`,
+                    amount: isAluno ? batch?.Tickets[0]?.student_price : batch?.Tickets[0]?.external_price,
+                    paymentId: paymentId,
+                    payer: {
+                        email: user?.email,
+                        first_name: user?.name,
+                        identification: {
+                            type: "CPF",
+                            number: user?.cpf
+                        }
+                    },
+                    userId: user?.id,
+                    batchId: batch.id,
+                    ticketId: batch?.Tickets[0]?.id,
+
+                }
+            });
+            setQrCode(response.data);
+
+            // Iniciar o contador regressivo
+            setTimeLeft(30 * 60); // Reset para 30 minutos
+
+            timerRef.current = setInterval(() => {
+                setTimeLeft(prevTime => {
+                    if (prevTime <= 1) {
+                        clearInterval(timerRef.current);
+                        onClose()
+                        // Aqui você pode adicionar lógica para cancelar o pedido automaticamente
+                        return 0;
+                    }
+                    return prevTime - 1;
+                });
+            }, 1000);
+
+            // 3. Atualizar o availableTickets no Batch
+            if (event?.Batch?.[0]) {
+                await api.patch(`/batchs?id=${event.Batch[0].id}`, {
+                    availableTickets: event.Batch[0].availableTickets - 1
+                });
+            }
+
+            if (onSuccess) onSuccess();
+
+        } catch (error) {
+            console.error('Error fetching QR code:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    // Limpar o intervalo quando o componente for desmontado
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+            }
         };
     }, []);
 
@@ -138,7 +139,7 @@ export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess 
                         <div className="countdown-timer">
                             <p>Tempo restante para pagamento: <span>{formatTime(timeLeft)}</span></p>
                             {timeLeft < 60 && (
-                            <p style={{color: 'red'}}>Seu pedido será cancelado em breve!</p>
+                                <p style={{ color: 'red' }}>Seu pedido será cancelado em breve!</p>
                             )}
                         </div>
                     )}
