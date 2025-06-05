@@ -20,6 +20,7 @@ type ModalProps = {
     isOpen: boolean;
     onClose: () => void;
     event: EventWithBatchsAndTickets | null;
+    batch?: Batch & { Tickets: Ticket[] };
     isAluno?: boolean;
     user: User | null;
     onSuccess?: () => void;
@@ -63,8 +64,8 @@ export function Modal({ isOpen, onClose, event, batch, isAluno, user, onSuccess 
                         }
                     },
                     userId: user?.id,
-                    batchId: event?.Batch[1].id,
-                    ticketId: event?.Batch[1]?.Tickets[0]?.id,
+                    batchId: batch?.id,
+                    ticketId: batch?.Tickets[0]?.id,
                 }
             });
             setQrCode(response.data);
